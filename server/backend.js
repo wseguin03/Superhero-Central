@@ -81,7 +81,46 @@ app.get('/power-db', (req, res) => {
       });
   });
 
+// GET route to get an item by its "id"
+app.get('/info-db/:id', (req, res) => {
+    const itemId = req.params.id;
+  
+    Info.findOne({"id": itemId})
+      .then((result) => {
+        if (result) {
+          res.send(result);
+        } else {
+          res.status(404).send("Item not found");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      });
+  });
 
+  app.get('/power-db/:id', (req, res) => {
+    const itemId = req.params.id;
+  
+    Info.findOne({"id": itemId})
+      .then((result_one) => {
+        console.log(result_one.name)
+        if (result_one) {
+            Power.findOne({"hero_names": result_one.name})
+            .then((result) => {
+                console.log("Result "+ result)
+                res.send(result);
+            })
+        } else {
+          res.status(404).send("Item not found");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      });
+  });
+  
 
   
 
