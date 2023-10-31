@@ -46,7 +46,7 @@ mongoose.connect(db_uri, { useNewUrlParser: true, useUnifiedTopology: true })
   });
 
 // app.use('/', express.static('client'));
-app.use(express.json());
+router.use(express.json());
 
 const path = require('path');
 
@@ -103,6 +103,28 @@ app.get('/info-db/:id', (req, res) => {
       });
   });
 //##############################################################################
+
+// GET INFO BY NAME
+// app.get('/info-db/:name', (req, res) => {
+//   const heroName = req.params.name;
+
+//   Info.find({"name": { $regex: heroName, $options: 'i' }}) 
+//     .then((results) => {
+//       if (results.length > 0) {
+//         res.send(results);
+//       } else {
+//         res.status(404).send("Items not found");
+//       }
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).send("Internal Server Error");
+//     });
+// });
+
+//##############################################################################
+
+
 
 //GET POWER BY ID
   app.get('/power-db/:id', (req, res) => {
