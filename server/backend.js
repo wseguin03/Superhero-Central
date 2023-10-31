@@ -45,8 +45,12 @@ mongoose.connect(db_uri, { useNewUrlParser: true, useUnifiedTopology: true })
     console.log('Error connecting to db: ', err);
   });
 
-app.use('/', express.static('static'));
-router.use(express.json());
+// app.use('/', express.static('client'));
+app.use(express.json());
+
+const path = require('path');
+
+app.use('/', express.static(path.join(__dirname, '..', 'client')));
 
 // app.get('/info', (req, res) => {
 //   res.send(superhero_info);
@@ -81,7 +85,7 @@ app.get('/power-db', (req, res) => {
       });
   });
 
-// GET route to get an item by its "id"
+// GET INFO BY ID
 app.get('/info-db/:id', (req, res) => {
     const itemId = req.params.id;
   
@@ -98,7 +102,9 @@ app.get('/info-db/:id', (req, res) => {
         res.status(500).send("Internal Server Error");
       });
   });
+//##############################################################################
 
+//GET POWER BY ID
   app.get('/power-db/:id', (req, res) => {
     const itemId = req.params.id;
   
@@ -108,8 +114,14 @@ app.get('/info-db/:id', (req, res) => {
         if (result_one) {
             Power.findOne({"hero_names": result_one.name})
             .then((result) => {
-                console.log("Result "+ result)
-                res.send(result);
+                const filteredResult = {};
+                    for (const key in result) {
+                        if (result[key] == "True") {//only returns powers with a True value
+                            filteredResult[key] = result[key];
+                            }
+                        }
+                        console.log(filteredResult)
+                        res.send(filteredResult);
             })
         } else {
           res.status(404).send("Item not found");
@@ -120,8 +132,26 @@ app.get('/info-db/:id', (req, res) => {
         res.status(500).send("Internal Server Error");
       });
   });
-  
-
+//##############################################################################
+//GET ALL UNIQUE PUBLISHERS
+  app.get('/publishers', (req, res) => {
+        Info.distinct("Publisher")
+        .then((result)=>{
+        if(result){
+            result = result.filter(Boolean)//remove null values
+        console.log(result);
+        res.send(result);
+        }
+        else {
+            res.status(404).send("Item not found");
+          }
+  })
+  .catch((err) => {
+    console.log(err)
+    res.status(404500).send("Internal Server Error")
+  });
+});
+//##############################################################################
   
 
 function uploadData(){

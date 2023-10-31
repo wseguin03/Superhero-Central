@@ -3,12 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>SE3316 Lab 3</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>SE3316 Lab 3</h1>
-      
+        <h1>Superhero Database</h1>
+        <h2 id = 'search-bar-title'>Search for a Superhero</h2>
+        <div id="search-bar">
+            <input type="text" id="search" placeholder="Search for a Superhero">
+            <select id="filter-dropdown">
+                <option value="all">Name</option>
+                <option value="name">Race</option>
+                <option value="gender">Publisher</option>
+                <option value="gender">Power</option>
+            </select>
+            <button id="search-button" onclick="getInfo()">Search</button>
+        </div>
+        <div id= 'search-results'>
+            <div id="search-results-title">
+                <h2>Search Results</h2>
+            </div>
+            <div id="search-results-list">
+                <ul id="search-results-list-ul">
+                </ul>
+            </div>
+        </div>
     </div>
+    <script src="script.js"></script>
+</body>
 </html>
