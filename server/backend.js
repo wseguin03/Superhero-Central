@@ -108,7 +108,7 @@ app.route('/info-db/:id')
       
   });
   app.route("/create-list")
-  .post((req, res) => {
+  .put((req, res) => {
     console.log(req.body);
     if (!req.body || !req.body.name) {
         res.status(400).send("Invalid request: 'name' is missing in the request body.");
@@ -148,7 +148,42 @@ app.route('/info-db/:id')
         .catch((err) => {
             console.log(err);
         });
+})
+.post((req, res) => {
+  console.log(req.body);
+  if (!req.body || !req.body.name) {
+      res.status(400).send("Invalid request: 'name' is missing in the request body.");
+      return;
+  }
+
+  const listName = req.body.name;
+
+  List.findOne({ "name": listName })
+      .then((result) => {
+          if (result) {
+              // List exists, update it here
+              result.list = req.body.list; // Update the list data
+              result.save()
+                  .then(() => {
+                      console.log('List document updated.');
+                      res.send(result);
+                  })
+                  .catch((err) => {
+                      console.error('Error updating List document: ', err);
+                      res.status(500).send("Internal Server Error");
+                  });
+          } else {
+              // List doesn't exist, send a 404 response
+              res.status(404).send("List not found");
+          }
+      })
+      .catch((err) => {
+          console.log(err);
+          res.status(500).send("Internal Server Error");
+      });
 });
+      
+
 
 
 //##############################################################################

@@ -1,5 +1,21 @@
+
 document.getElementById('search-button').addEventListener('click', search);
 document.getElementById('create-list-button').addEventListener('click', createNewList);
+let selectedHeros = [];
+let selectedList = ''
+
+document.getElementById('add-heros-btn').addEventListener('click', addToListFinal);
+
+
+
+function setList(){
+    const selectedNameTitle = document.getElementById('selected-list-name');
+    selectedNameTitle.innerHTML = '';
+    selectedNameTitle.appendChild(document.createTextNode("Selected List: "+`${this.id}`));
+
+    selectedList = this.id;
+    console.log("Selected List "+ selectedList)
+}
 loadLists();
 function loadLists(){
 
@@ -11,19 +27,21 @@ function loadLists(){
         .then(data => {
             console.log(data)
             data.forEach(e => {
+            const div = document.createElement('div');
             const l = document.createElement('li');
             const title = document.createElement('h2')
             title.appendChild(document.createTextNode(`${e.name}`));
-            l.appendChild(title);
+            div.appendChild(title);
 
             l.setAttribute('id', e.name);
             const removeButton = document.createElement('button');
             removeButton.appendChild(document.createTextNode('-'));
             removeButton.setAttribute('class', 'remove-list-button');
-            l.appendChild(removeButton);
+            div.appendChild(removeButton);
+            l.appendChild(div); 
 
             mainList.appendChild(l)
-            // document.getElementById(e.name).addEventListener('click', displayLists);
+            document.getElementById(e.name).addEventListener('click', setList);
 
             });
         });
@@ -31,18 +49,19 @@ function loadLists(){
     });
 }
 
-function createNewList(ids) {
-    let listName = document.getElementById('list-name').value;
+
+function displayLists(){
     
+}
+function createNewList() {
+    let listName = document.getElementById('list-name').value;
     // Create the list object
     const list = {
-        name: listName,
-        list: ids
+        name: listName
     }
-    
     // Send the list object to the server
     fetch("/create-list", {
-        method: "POST",
+        method: "PUT",
         headers: {
         "Content-Type": "application/json"
         },
@@ -141,8 +160,55 @@ function search() {
 function addToList(){
     let id = this.id;
     id = id.substring(1)
-    console.log(id)
+    //verify it is not already in list
+    if(selectedList!=''){
+        if(selectedHeros.indexOf(parseInt(id)) === -1){
+        selectedHeros.push(parseInt(id));
+        }
+}
+    // console.log(id)
+    console.log(selectedHeros)
     
+    
+}
+
+function addToListFinal(){
+    console.log('activated')
+    if(selectedList!=''){
+    label = document.getElementById('selected-list-name');
+    label.innerHTML = 'No List Selected';
+    console.log('SUCCESS')
+
+    const list = {
+        name: selectedList,
+        list: selectedHeros
+    }
+    selectedList = ''
+    selectedHeros = []
+    fetch("/create-list", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify(list),
+        
+    })
+    .then(res =>{
+        if(res.ok){
+        res.json()
+        .then(data => {console.log(data)
+            loadLists();
+
+        }
+        )
+        .catch(err => console.log('Failed to update list'))
+        }
+        else{
+            console.log('Error: ', res.status)
+
+        }
+    })
+}
 }
 function getInfo() {
     fetch("/info-db")
