@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const Info = require('./info');
 const Power = require('./powers');
+const List = require('./lists');
 
 require('dotenv').config();
 
@@ -47,7 +48,7 @@ mongoose.connect(db_uri, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // app.use('/', express.static('client'));
 router.use(express.json());
-
+app.use(express.json()); // Add this line
 const path = require('path');
 
 app.use('/', express.static(path.join(__dirname, '..', 'client')));
@@ -86,7 +87,8 @@ app.get('/power-db', (req, res) => {
   });
 
 // GET INFO BY ID
-app.get('/info-db/:id', (req, res) => {
+app.route('/info-db/:id') 
+.get((req, res) => {
     const itemId = req.params.id;
   
     Info.findOne({"id": itemId})
@@ -100,8 +102,55 @@ app.get('/info-db/:id', (req, res) => {
       .catch((err) => {
         console.log(err);
         res.status(500).send("Internal Server Error");
-      });
+      })
+    })
+    .post((req, res) => {
+      
   });
+  app.route("/create-list")
+  .post((req, res) => {
+    console.log(req.body);
+    if (!req.body || !req.body.name) {
+        res.status(400).send("Invalid request: 'name' is missing in the request body.");
+        return;
+    }
+
+    const listName = req.body.name;
+
+    List.findOne({ "name": listName })
+        .then((result) => {
+            if (result) {
+                res.status(404).send("List already exists");
+                console.log('List already exists.');
+            } else {
+                const list = new List(req.body);
+                list.save()
+                    .then(() => {
+                        console.log('List document saved.');
+                        res.send(req.body);
+                    })
+                    .catch((err) => {
+                        console.error('Error saving List document: ', err);
+                        res.status(500).send("Internal Server Error");
+                    });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send("Internal Server Error");
+        });
+})
+.get((req, res) => {
+    List.find()
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
+
+
 //##############################################################################
 
 // GET INFO BY NAME
