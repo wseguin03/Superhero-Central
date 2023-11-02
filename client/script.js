@@ -15,11 +15,72 @@ function setList(){
 
     selectedList = this.id;
     console.log("Selected List "+ selectedList)
+
+    fetch("/create-list/"+selectedList)
+    .then(res=> {
+        res.json()
+        .then(data=>{
+            console.log(data.list)//verif fetch
+            const dontInclude = ['_id', '__v', 'id'];
+            const l = document.getElementById('search-results-list-ul');
+            l.innerHTML = '';
+            
+            for(list in data.list){
+                const item = document.createElement('li');
+                fetch("/info-db/"+data.list[list])
+                .then(res => {
+                    res.json()
+                    .then(e => {
+                        // console.log(data)
+                        for (const key in e) {
+                            if (e[key] !== null && e[key] !== '' && dontInclude.indexOf(key) ===-1) {
+                                if (key === 'name') {
+                                    //title
+                                    const title = document.createElement('h2');
+                                    title.appendChild(document.createTextNode(`${e[key]}`));
+                                    item.appendChild(title);
+                                } else {
+                                    const label = document.createElement('strong');
+                                    label.appendChild(document.createTextNode(`${key}:`));
+                                    const value = document.createElement('span');
+                                    value.appendChild(document.createTextNode(` ${e[key]}`));
+                                    item.appendChild(label);
+                                    item.appendChild(value);
+                                    item.appendChild(document.createElement('br'));
+                                }
+                            }
+
+                        }
+
+                    });
+                    });
+                fetch("/power-db/"+data.list[list])
+                .then(res => {
+                    res.json()
+                    .then(e => {
+                        console.log(e)
+                        const title = document.createElement('h2');
+                            title.appendChild(document.createTextNode(('Superpowers')));
+                            item.append(title);
+                        for(key in e){
+                            const label = (document.createTextNode(`${key}, `));
+                            item.appendChild(label);
+
+                        }
+                    });
+                
+            });
+            l.appendChild(item);
+            
+        }
+        })
+    })
 }
 loadLists();
 function loadLists(){
 
     const mainList = document.getElementById('list-ul');
+
     mainList.innerHTML = '';
     fetch("/create-list")
     .then(res => {
@@ -89,7 +150,7 @@ function search() {
     const filter = document.getElementById('filter-dropdown').value;
     const search = document.getElementById('search').value;
     const quantity = document.getElementById('display-quantity').value;
-    console.log(search);
+    // console.log(search);
 
     fetch("/info-db")
         .then(res => {
