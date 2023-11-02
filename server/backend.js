@@ -125,6 +125,23 @@ app.route('/info-db/:id')
         })
       })
 
+app.delete('/delete-list/:name', (req, res) => {
+    const listName = req.params.name;
+  
+    List.findOneAndDelete({"name": listName})
+      .then((result) => {
+        if (result) {
+          res.send(result);
+        } else {
+          res.status(404).send("List not found");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      })
+  });
+
   app.route("/create-list")
   .put((req, res) => {
     console.log(req.body);

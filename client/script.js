@@ -5,7 +5,36 @@ let selectedHeros = [];
 let selectedList = ''
 
 document.getElementById('add-heros-btn').addEventListener('click', addToListFinal);
-
+function removeList() {
+    let listName = this.id;
+    listName = listName.replace('remove-list-button', '');
+    // console.log(listName)
+    fetch("/delete-list/" + listName, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // List deleted successfully, you can update your UI or take further actions here.
+            console.log("List deleted successfully");
+        } else {
+            // Handle the error case, e.g., list not found or other server errors.
+            console.log("Error deleting the list");
+        }
+    })
+    .catch(error => {
+        console.error("Error: " + error);
+    });
+    label = document.getElementById('selected-list-name');
+    console.log(label)
+    label.innerHTML = 'No List Selected';
+    selectedList = ''
+    selectedHeros = [];
+    loadLists();
+    
+}
 
 
 function setList(){
@@ -58,7 +87,7 @@ function setList(){
                 .then(res => {
                     res.json()
                     .then(e => {
-                        console.log(e)
+                        // console.log(e)
                         const title = document.createElement('h2');
                             title.appendChild(document.createTextNode(('Superpowers')));
                             item.append(title);
@@ -98,22 +127,20 @@ function loadLists(){
             const removeButton = document.createElement('button');
             removeButton.appendChild(document.createTextNode('-'));
             removeButton.setAttribute('class', 'remove-list-button');
+            removeButton.setAttribute('id', 'remove-list-button'+e.name);
+
             div.appendChild(removeButton);
             l.appendChild(div); 
 
             mainList.appendChild(l)
             document.getElementById(e.name).addEventListener('click', setList);
-
+            document.getElementById('remove-list-button'+e.name).addEventListener('click', removeList);
             });
         });
 
     });
 }
 
-
-function displayLists(){
-    
-}
 function createNewList() {
     let listName = document.getElementById('list-name').value;
     // Create the list object
@@ -217,6 +244,9 @@ function search() {
         
 
 }
+
+
+
 
 function addToList(){
     let id = this.id;
