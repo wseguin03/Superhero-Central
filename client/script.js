@@ -33,6 +33,8 @@ function removeList() {
     selectedList = ''
     selectedHeros = [];
     loadLists();
+    const l = document.getElementById('search-results-list-ul');
+    l.innerHTML = '';
     
 }
 
@@ -44,7 +46,7 @@ function setList(){
 
     selectedList = this.id;
     console.log("Selected List "+ selectedList)
-
+        
     fetch("/create-list/"+selectedList)
     .then(res=> {
         res.json()

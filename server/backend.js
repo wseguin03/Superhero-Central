@@ -217,29 +217,63 @@ app.delete('/delete-list/:name', (req, res) => {
           res.status(500).send("Internal Server Error");
       });
 });
-      
+app.get('/list-db/:name', (req, res) => {
+  List.findOne({ 'name': req.params.name })
+    .then((result) => {
+      if (!result) {
+        res.status(404).json({ error: 'List not found' });
+        return;
+      }
 
+      const listIds = result.list;
+      const combinedResults = [];
 
+      // Use Promise.all to fetch Info and Power data for each ID in parallel
+      Promise.all(
+        listIds.map((id) => {
+          return Info.findOne({ "id": id })
+            .then((infoResult) => {
+              if (!infoResult) {
+                return null; // If Info data is not found, return null
+              }
 
-//##############################################################################
+              // Retrieve the Power data
+              return Power.findOne({ "hero_names": infoResult.name })
+                .then((powerResult) => {
+                  if (!powerResult) {
+                    return null; // If Power data is not found, return null
+                  }
+                  const filteredResult = {};
+                    for (const key in powerResult) {
+                        if (powerResult[key] == "True") {//only returns powers with a True value
+                            filteredResult[key] = powerResult[key];
+                            }
+                        }
+                  // Combine Info and Power data for this ID
+                  const combinedData = {
+                    id: id,
+                    info: infoResult,
+                    power: filteredResult,
+                  };
+                  combinedResults.push(combinedData);
+                });
+            });
+        })
+      )
+      .then(() => {
+        res.json({ results: combinedResults });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+});
 
-// GET INFO BY NAME
-// app.get('/info-db/:name', (req, res) => {
-//   const heroName = req.params.name;
-
-//   Info.find({"name": { $regex: heroName, $options: 'i' }}) 
-//     .then((results) => {
-//       if (results.length > 0) {
-//         res.send(results);
-//       } else {
-//         res.status(404).send("Items not found");
-//       }
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.status(500).send("Internal Server Error");
-//     });
-// });
 
 //##############################################################################
 
