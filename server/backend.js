@@ -295,7 +295,7 @@ app.get('/list-db/:name', (req, res) => {
                             filteredResult[key] = result[key];
                             }
                         }
-                        console.log(filteredResult)
+                        // console.log(filteredResult)
                         res.send(filteredResult);
             })
         } else {

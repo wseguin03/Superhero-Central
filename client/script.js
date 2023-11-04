@@ -38,75 +38,69 @@ function removeList() {
     
 }
 
-
-function setList(){
+function setList() {
     const selectedNameTitle = document.getElementById('selected-list-name');
     selectedNameTitle.innerHTML = '';
-    selectedNameTitle.appendChild(document.createTextNode("Selected List: "+`${this.id}`));
+    selectedNameTitle.appendChild(document.createTextNode("Selected List: " + `${this.id}`));
 
     selectedList = this.id;
-    console.log("Selected List "+ selectedList)
-        
-    fetch("/create-list/"+selectedList)
-    .then(res=> {
-        res.json()
-        .then(data=>{
-            console.log(data.list)//verif fetch
-            const dontInclude = ['_id', '__v', 'id'];
-            const l = document.getElementById('search-results-list-ul');
-            l.innerHTML = '';
-            
-            for(list in data.list){
-                const item = document.createElement('li');
-                fetch("/info-db/"+data.list[list])
-                .then(res => {
-                    res.json()
-                    .then(e => {
-                        // console.log(data)
-                        for (const key in e) {
-                            if (e[key] !== null && e[key] !== '' && dontInclude.indexOf(key) ===-1) {
+    console.log("Selected List " + selectedList);
+
+    fetch("/list-db/" + selectedList)
+        .then((res) => {
+            res.json()
+                .then((data) => {
+                    console.log(data.results);
+
+                    const dontInclude = ['_id', '__v', 'id'];
+                    const l = document.getElementById('search-results-list-ul');
+                    l.innerHTML = '';
+
+                    data.results.forEach((list) => {
+                        const item = document.createElement('li');
+
+                        // Handle the 'info' property
+                        const info = list.info;
+
+                        for (const key in info) {
+                            if (info[key] !== null && info[key] !== '' && dontInclude.indexOf(key) === -1) {
                                 if (key === 'name') {
-                                    //title
+                                    // Title
                                     const title = document.createElement('h2');
-                                    title.appendChild(document.createTextNode(`${e[key]}`));
+                                    title.appendChild(document.createTextNode(`${info[key]}`));
                                     item.appendChild(title);
                                 } else {
                                     const label = document.createElement('strong');
                                     label.appendChild(document.createTextNode(`${key}:`));
                                     const value = document.createElement('span');
-                                    value.appendChild(document.createTextNode(` ${e[key]}`));
+                                    value.appendChild(document.createTextNode(` ${info[key]}`));
                                     item.appendChild(label);
                                     item.appendChild(value);
                                     item.appendChild(document.createElement('br'));
                                 }
                             }
-
                         }
 
-                    });
-                    });
-                fetch("/power-db/"+data.list[list])
-                .then(res => {
-                    res.json()
-                    .then(e => {
-                        // console.log(e)
-                        const title = document.createElement('h2');
-                            title.appendChild(document.createTextNode(('Superpowers')));
-                            item.append(title);
-                        for(key in e){
-                            const label = (document.createTextNode(`${key}, `));
+                        // Handle the 'power' property
+                        const power = list.power;
+                        const powerTitle = document.createElement('h2');
+                        powerTitle.appendChild(document.createTextNode('Superpowers'));
+                        item.appendChild(powerTitle);
+
+                        for (const key in power) {
+                            const label = document.createTextNode(`${key}, `);
                             item.appendChild(label);
-
                         }
+
+                        l.appendChild(item);
                     });
-                
-            });
-            l.appendChild(item);
-            
-        }
-        })
-    })
+                });
+        });
 }
+
+
+
+
 loadLists();
 function loadLists(){
 
