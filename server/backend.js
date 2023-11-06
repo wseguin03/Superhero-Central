@@ -150,12 +150,16 @@ app.delete('/delete-list/:name', (req, res) => {
       return res.status(400).send("Invalid request: 'name' is missing or invalid.");
     }
 
-    List.findOne({ "name": listName })
+    // Filter (sanitize) the 'listName' to prevent unintended side effects
+    const sanitizedListName = sanitizeInput(listName);
+
+    List.findOne({ "name": sanitizedListName })
       .then((result) => {
         if (result) {
           return res.status(400).send("List already exists.");
         } else {
           const list = new List(req.body);
+          list.name = sanitizedListName; // Store the sanitized name
           list.save()
             .then(() => {
               console.log('List document saved.');
@@ -190,12 +194,21 @@ app.delete('/delete-list/:name', (req, res) => {
       return res.status(400).send("Invalid request: 'name' is missing or invalid.");
     }
 
+    // Filter (sanitize) the 'listName' to prevent unintended side effects
+    const sanitizedListName = sanitizeInput(listName);
+
     const list = new List(req.body);
 
-    List.findOne({ "name": listName })
+    List.findOne({ "name": sanitizedListName })
       .then((result) => {
         if (result) {
           result.list = req.body.list; // Update the list data
+
+          // Prevent unintended side effects by ensuring the name remains the same
+          if (result.name !== sanitizedListName) {
+            return res.status(400).send("Invalid request: 'name' cannot be changed.");
+          }
+
           result.save()
             .then(() => {
               console.log('List document updated.');
@@ -214,6 +227,18 @@ app.delete('/delete-list/:name', (req, res) => {
         res.status(500).send("Internal Server Error");
       });
   });
+
+// Input sanitization function
+function sanitizeInput(input) {
+  // Use a library or implement custom sanitization based on your needs
+  // Example using DOMPurify library:
+  const createDOMPurify = require("dompurify");
+  const { JSDOM } = require("jsdom");
+  const window = new JSDOM("").window;
+  const DOMPurify = createDOMPurify(window);
+  return DOMPurify.sanitize(input);
+}
+
 
 app.get('/list-db/:name', (req, res) => {
   List.findOne({ 'name': req.params.name })
