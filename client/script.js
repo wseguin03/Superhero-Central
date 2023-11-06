@@ -68,6 +68,8 @@ function setList() {
                                     // Title
                                     const title = document.createElement('h2');
                                     title.appendChild(document.createTextNode(`${info[key]}`));
+                                    title.setAttribute('class', 'list-title');
+
                                     item.appendChild(title);
                                 } else {
                                     const label = document.createElement('strong');
@@ -96,6 +98,8 @@ function setList() {
                     });
                 });
         });
+        console.log("LISTSSSSS"+document.querySelectorAll('.list-title'))
+
 }
 
 
@@ -169,78 +173,151 @@ function createNewList() {
     })
 }
 
+
+
+
+
 function search() {
     const filter = document.getElementById('filter-dropdown').value;
     const search = document.getElementById('search').value;
     const quantity = document.getElementById('display-quantity').value;
-    // console.log(search);
+    const dontInclude = ['_id', '__v', 'id'];
 
-    fetch("/info-db")
+    if(filter!='Power'){
+    fetch(`/search-info?field=${filter}&pattern=${search}&n=${quantity}`)
         .then(res => {
             res.json()
                 .then(data => {
-                    let filteredData = data.filter(e => {
-                        // Check if the search text is found in the property based on the selected filter
-                        switch (filter) {
-                            case "name":
-                                return e.name.toLowerCase().includes(search.toLowerCase());
-                            case "race":
-                                return e.Race.toLowerCase().includes(search.toLowerCase());
-                            case "publisher":
-                                return e.Publisher.toLowerCase().includes(search.toLowerCase());
-                            case "power":
-                                // Replace 'power' with the actual property you want to search in
-                                return e.Power.toLowerCase().includes(search.toLowerCase());
-                            default:
-                                return true; // No filter selected, return all data
-                        }
-                        
-                    });
-                    if (filteredData.length > quantity && quantity)
-                    filteredData = filteredData.slice(0, quantity);
-                    console.log(filteredData)
                     const l = document.getElementById('search-results-list-ul');
                     l.innerHTML = '';
-                    const dontInclude = ['_id', '__v', 'id'];
-                    filteredData.forEach(e => {
-                        const item = document.createElement('li');
-                        for (const key in e) {
-                            if (e[key] !== null && e[key] !== '' && dontInclude.indexOf(key) ===-1) {
-                                if (key === 'name') {
-                                    //title
-                                    const title = document.createElement('h2');
-                                    title.appendChild(document.createTextNode(`${e[key]}`));
-                                    item.appendChild(title);
-                                } else {
-                                    const label = document.createElement('strong');
-                                    label.appendChild(document.createTextNode(`${key}:`));
-                                    const value = document.createElement('span');
-                                    value.appendChild(document.createTextNode(` ${e[key]}`));
-                                    item.appendChild(label);
-                                    item.appendChild(value);
-                                    item.appendChild(document.createElement('br'));
+                    
+                    data.forEach(elements => {
+                        fetch(`/info-db/${elements}`)
+                        .then(res => {
+                            res.json()
+                            .then(e => {
+                                const item = document.createElement('li');
+                                for (const key in e) {
+                                    if(key=='id'){
+                                        fetch(`/power-db/${e[key]}`)
+                                        .then(res => {
+                                            res.json()
+                                            .then(p => {
+                                                const powerTitle = document.createElement('h2');
+                                                powerTitle.appendChild(document.createTextNode('Superpowers'));
+                                                item.appendChild(powerTitle);
+                                                for (const key in p) {
+                                                    const label = document.createTextNode(`${key}, `);
+                                                    item.appendChild(label);
+                                                }
+                                            })
+                                        });
+                                    }
+                                    if (e[key] !== null && e[key] !== '' && dontInclude.indexOf(key) === -1) {
+                                        if (key === 'name') {
+                                            // Title
+                                            
+                                            const title = document.createElement('h2');
+                                            title.appendChild(document.createTextNode(`${e[key]}`));
+                                            item.appendChild(title);
+                                        } else {
+                                            const label = document.createElement('strong');
+                                            label.appendChild(document.createTextNode(`${key}:`));
+                                            const value = document.createElement('span');
+                                            value.appendChild(document.createTextNode(` ${e[key]}`));
+                                            item.appendChild(label);
+                                            item.appendChild(value);
+                                            item.appendChild(document.createElement('br'));
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                        const button = document.createElement('button');
-                        button.setAttribute('id', 'b'+e.id);
-                        button.setAttribute('class', 'add-to-list-button')
-                        // console.log(button.id)
-
-                        
-                        button.appendChild(document.createTextNode('Add to list'));
-                        item.appendChild(button);
-                        l.appendChild(item);
-                        document.getElementById('b'+e.id).addEventListener('click', addToList);
-
-                    });
-
-                });
-        });
+                                const button = document.createElement('button');
+                                button.setAttribute('id', 'b' + e.id);
+                                button.setAttribute('class', 'add-to-list-button');
         
-
+                                button.appendChild(document.createTextNode('Add to list'));
+                                item.appendChild(button);
+                                l.appendChild(item);
+                                document.getElementById('b' + e.id).addEventListener('click', addToList);
+                            })
+                        }
+                        )
+                        // console.log(e);
+                       
+                    });
+                });
+        });}
+        else {
+            // console.log('searching by power: ' + search);
+            fetch(`/searchbypower?power=${search}&n=${quantity}`)
+            .then(res => {
+                res.json()
+                .then(heroesWithPower => {
+                    const l = document.getElementById('search-results-list-ul');
+                    l.innerHTML = '';
+        
+                    heroesWithPower.forEach(heroName => {
+                        console.log(heroName);
+                        fetch(`/info-db-name/${heroName}`)
+                        .then(res => {
+                            res.text()
+                            .then(heroId => {
+                                fetch(`/info-db/${heroId}`)
+                                .then(res => {
+                                    res.json()
+                                    .then(heroInfo => {
+                                        const item = document.createElement('li');
+                                        const powerTitle = document.createElement('h2');
+                                        powerTitle.appendChild(document.createTextNode('Superpowers'));
+                                        item.appendChild(powerTitle);
+        
+                                        fetch(`/power-db/${heroId}`)
+                                        .then(res => {
+                                            res.json()
+                                            .then(p => {
+                                                for (const key in p) {
+                                                    const label = document.createTextNode(`${key}, `);
+                                                    item.appendChild(label);
+                                                }
+                                            });
+                                        });
+        
+                                        for (const key in heroInfo) {
+                                            if (heroInfo[key] !== null && heroInfo[key] !== '' && dontInclude.indexOf(key) === -1) {
+                                                if (key === 'name') {
+                                                    // Title
+                                                    const title = document.createElement('h2');
+                                                    title.appendChild(document.createTextNode(`${heroInfo[key]}`));
+                                                    item.appendChild(title);
+                                                } else {
+                                                    const label = document.createElement('strong');
+                                                    label.appendChild(document.createTextNode(`${key}:`));
+                                                    const value = document.createElement('span');
+                                                    value.appendChild(document.createTextNode(` ${heroInfo[key]}`));
+                                                    item.appendChild(label);
+                                                    item.appendChild(value);
+                                                    item.appendChild(document.createElement('br'));
+                                                }
+                                            }
+                                        }
+        
+                                        const button = document.createElement('button');
+                                        button.setAttribute('id', 'b' + heroId);
+                                        button.setAttribute('class', 'add-to-list-button');
+                                        button.appendChild(document.createTextNode('Add to list'));
+                                        item.appendChild(button);
+                                        l.appendChild(item);
+                                        document.getElementById('b' + heroId).addEventListener('click', addToList);
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        }
+        
 }
-
 
 
 
@@ -259,12 +336,12 @@ function addToList(){
     
 }
 
+
 function addToListFinal(){
     console.log('activated')
     if(selectedList!=''){
     label = document.getElementById('selected-list-name');
     label.innerHTML = 'No List Selected';
-    console.log('SUCCESS')
 
     const list = {
         name: selectedList,
@@ -341,3 +418,4 @@ function getInfo() {
 
 
 document.getElementById('search-button').addEventListener('click', search);
+

@@ -353,3 +353,72 @@ function uploadData(){
             });
         });
 }
+
+app.get('/search-info', (req, res) => {
+  const field = req.query.field;  // Get the field from the query parameters
+  const pattern = req.query.pattern;  // Get the pattern from the query parameters
+  const n = req.query.n ? parseInt(req.query.n) : -1;  // Get n from the query parameters or set to -1 if not provided
+
+  // Construct a query to find matching superhero IDs based on the field and pattern
+  const query = {};
+  query[field] = new RegExp(pattern, 'i'); // Case-insensitive search
+
+  Info.find(query)
+      .then((results) => {
+          // Limit the results to the first n if n is provided and positive
+          if (n > 0) {
+              results = results.slice(0, n);
+          }
+
+          res.send(results.map(info => info.id));
+      })
+      .catch((err) => {
+          console.log(err);
+          res.status(500).send("Internal Server Error");
+      });
+});
+
+app.get('/searchbypower', (req, res) => {
+  const powerName = req.query.power; // Get the power name from the query parameters
+  const limit = parseInt(req.query.n); // Get the limit from query parameters, default to 10 if not provided or invalid
+
+  // Construct a query to find heroes with the specified power
+  const query = {};
+  query[powerName] = "True";
+
+  // Add the limit to the query
+  Power.find(query)
+    .limit(limit)
+    .then((results) => {
+      if (results.length > 0) {
+        // Extract hero names from the results
+        const heroNames = results.map(result => result.hero_names);
+
+        // Send the list of hero names with the specified power
+        res.send(heroNames);
+      } else {
+        res.status(404).send("No heroes found with the specified power");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Internal Server Error");
+    });
+});
+
+app.get('/info-db-name/:name', (req, res) => {
+  const heroName = req.params.name; // Get the hero name from the request parameters
+
+  Info.findOne({ name: heroName }) // Find the document by hero name and select only the 'id' field
+    .then((result) => {
+      if (result) {
+        res.send(result.id.toString()); // Send the numeric ID as a string
+      } else {
+        res.status(404).send("Hero not found");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Internal Server Error");
+    });
+});

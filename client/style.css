@@ -134,7 +134,7 @@ body {
 #display-quantity{
     border-color: transparent;
     outline: none;
-    width: 40%;
+    width: 60%;
     text-align: center;
 }
 #search-customization{
@@ -164,7 +164,7 @@ body {
 #list-name{
     border-color: transparent;
     outline: none;
-    width: 40%;
+    width: 50%;
     text-align: center;
 }
 #list-container{
@@ -238,8 +238,17 @@ body {
     margin: 5px;
     border-color: transparent;
     outline: none;
-    width: 60%;
+    width: 80%;
     height: 30px;
     font-size: 14px;
     text-align: center;
+}
+#sort{
+    background-color: white;
+    border-radius: 10px;
+    width: 50%;
+    padding: 5px;
+    margin: 10px;
+    justify-content: center;
+    align-content: center;
 }

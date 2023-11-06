@@ -14,20 +14,20 @@
             <input type="text" id="search" placeholder="Search for a Superhero">
             <select id="filter-dropdown">
                 <option value="name">Name</option>
-                <option value="race">Race</option>
-                <option value="publisher">Publisher</option>
-                <option value="power">Power</option>
+                <option value="Race">Race</option>
+                <option value="Publisher">Publisher</option>
+                <option value="Power">Power</option>
             </select>
             <button id="search-button">Search</button>
         </div>
         <div id="search-customization">
             <div id = 'display-number'>
                 <h3>Number of search results</h3>
-                <input type="text" id="display-quantity" placeholder="Enter an amount">
+                <input type="text" id="display-quantity" placeholder="Enter limit" value = '10'>
             </div>
             <div id = 'create-list'>
                 <h3>Create a list</h3>
-                <input type="text" id="list-name" placeholder="Enter a list name">
+                <input type="text" id="list-name" placeholder="Enter list name">
                 <button id="create-list-button">Create</button>
             </div>
             <div id = 'selected-list'>
@@ -36,13 +36,14 @@
             </div>
             <div id = sort>
                 <h3 id= 'sort-title'>Sort by</h3>
-                <select id="sort-dropdown">
-                    <option value="name">Name</option>
-                    <option value="race">Race</option>
-                    <option value="publisher">Publisher</option>
-                    <option value="power">Power</option>
-                </select>
+                <button id = 'sort-btn'>Sort</button>
 
+                <!-- <select id="sort-dropdown">
+                    <option value="name">Name</option>
+                    <option value="Race">Race</option>
+                    <option value="Publisher">Publisher</option>
+                    <option value="power">Power</option>
+                </select> -->
             </div>
         </div>
        
