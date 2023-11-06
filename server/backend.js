@@ -141,82 +141,80 @@ app.delete('/delete-list/:name', (req, res) => {
         res.status(500).send("Internal Server Error");
       })
   });
-
   app.route("/create-list")
   .put((req, res) => {
-    console.log(req.body);
-    if (!req.body || !req.body.name) {
-        res.status(400).send("Invalid request: 'name' is missing in the request body.");
-        return;
-    }
-
     const listName = req.body.name;
 
+    // Validate that 'name' is provided and has a reasonable length
+    if (!listName || typeof listName !== 'string' || listName.length < 1 || listName.length > 255) {
+      return res.status(400).send("Invalid request: 'name' is missing or invalid.");
+    }
+
     List.findOne({ "name": listName })
-        .then((result) => {
-            if (result) {
-                res.status(404).send("List already exists");
-                console.log('List already exists.');
-            } else {
-                const list = new List(req.body);
-                list.save()
-                    .then(() => {
-                        console.log('List document saved.');
-                        res.send(req.body);
-                    })
-                    .catch((err) => {
-                        console.error('Error saving List document: ', err);
-                        res.status(500).send("Internal Server Error");
-                    });
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).send("Internal Server Error");
-        });
-})
-.get((req, res) => {
-    List.find()
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-})
-.post((req, res) => {
-  console.log(req.body);
-  if (!req.body || !req.body.name) {
-      res.status(400).send("Invalid request: 'name' is missing in the request body.");
-      return;
-  }
-
-  const listName = req.body.name;
-
-  List.findOne({ "name": listName })
       .then((result) => {
-          if (result) {
-              // List exists, update it here
-              result.list = req.body.list; // Update the list data
-              result.save()
-                  .then(() => {
-                      console.log('List document updated.');
-                      res.send(result);
-                  })
-                  .catch((err) => {
-                      console.error('Error updating List document: ', err);
-                      res.status(500).send("Internal Server Error");
-                  });
-          } else {
-              // List doesn't exist, send a 404 response
-              res.status(404).send("List not found");
-          }
+        if (result) {
+          return res.status(400).send("List already exists.");
+        } else {
+          const list = new List(req.body);
+          list.save()
+            .then(() => {
+              console.log('List document saved.');
+              res.status(201).send(req.body);
+            })
+            .catch((err) => {
+              console.error('Error saving List document: ', err);
+              res.status(500).send("Internal Server Error");
+            });
+        }
       })
       .catch((err) => {
-          console.log(err);
-          res.status(500).send("Internal Server Error");
+        console.log(err);
+        res.status(500).send("Internal Server Error");
       });
-});
+  })
+  .get((req, res) => {
+    List.find()
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      });
+  })
+  .post((req, res) => {
+    const listName = req.body.name;
+
+    // Validate that 'name' is provided and has a reasonable length
+    if (!listName || typeof listName !== 'string' || listName.length < 1 || listName.length > 255) {
+      return res.status(400).send("Invalid request: 'name' is missing or invalid.");
+    }
+
+    const list = new List(req.body);
+
+    List.findOne({ "name": listName })
+      .then((result) => {
+        if (result) {
+          result.list = req.body.list; // Update the list data
+          result.save()
+            .then(() => {
+              console.log('List document updated.');
+              res.send(result);
+            })
+            .catch((err) => {
+              console.error('Error updating List document: ', err);
+              res.status(500).send("Internal Server Error");
+            });
+        } else {
+          res.status(404).send("List not found");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      });
+  });
+
 app.get('/list-db/:name', (req, res) => {
   List.findOne({ 'name': req.params.name })
     .then((result) => {

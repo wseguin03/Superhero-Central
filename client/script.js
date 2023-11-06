@@ -75,6 +75,15 @@ function setList() {
                                     const label = document.createElement('strong');
                                     label.appendChild(document.createTextNode(`${key}:`));
                                     const value = document.createElement('span');
+                                    if(key === 'Race'){
+                                        value.setAttribute('class', 'race')
+                                    }
+                                    else if(key === 'Publisher'){
+                                        value.setAttribute('class', 'publisher')
+                                    }
+                                    else if(key === 'Power'){
+                                        value.setAttribute('class', 'power')
+                                    }
                                     value.appendChild(document.createTextNode(` ${info[key]}`));
                                     item.appendChild(label);
                                     item.appendChild(value);
@@ -98,14 +107,16 @@ function setList() {
                     });
                 });
         });
-        console.log("LISTSSSSS"+document.querySelectorAll('.list-title'))
+        // console.log("LISTSSSSS"+document.querySelectorAll('.list-title'))
 
 }
 
 
 
 
-loadLists();
+
+
+
 function loadLists(){
 
     const mainList = document.getElementById('list-ul');
@@ -141,37 +152,70 @@ function loadLists(){
     });
 }
 
+document.getElementById('create-list-button').addEventListener('click', createNewList);
+
 function createNewList() {
-    let listName = document.getElementById('list-name').value;
+    const listNameInput = document.getElementById('list-name');
+    const listName = listNameInput.value;
+
+    // Sanitize the list name to prevent HTML or JavaScript interpretation
+    const sanitizedListName = sanitizeInput(listName);
+
     // Create the list object
     const list = {
-        name: listName
-    }
+        name: sanitizedListName
+    };
+
     // Send the list object to the server
     fetch("/create-list", {
         method: "PUT",
         headers: {
-        "Content-Type": "application/json"
+            "Content-Type": "application/json"
         },
-        body: JSON.stringify(list),
-        
+        body: JSON.stringify(list)
     })
-    .then(res =>{
-        if(res.ok){
-        res.json()
-        .then(data => {console.log(data)
-            loadLists();
+    .then(res => {
+        if (res.ok) {
+            res.json().then(data => {
+                console.log(data);
+                loadLists();
+            });
+        } else {
+            console.log("Error: " + res.status);
+        }
+    });
 
-        }
-        )
-        .catch(err => console.log('Failed to add list'))
-        }
-        else{
-            console.log('Error: ', res.status)
+    // Reset the input field
+    listNameInput.value = '';
 
-        }
-    })
+    // Update the list name display
+    const listNameDisplay = document.getElementById('selected-list-name');
+    listNameDisplay.innerHTML = "Selected List: " + sanitizedListName;
+
+    // Render the list name in the entered language
+    renderListName(sanitizedListName);
 }
+
+function sanitizeInput(input) {
+    // Use textContent to sanitize input and prevent HTML/JS interpretation
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.textContent;
+}
+
+function renderListName(listName) {
+    const listNameDisplay = document.getElementById('selected-list-name');
+    listNameDisplay.innerHTML = "Selected List: " + listName;
+
+    // Display the list name in the language it is entered
+    const language = navigator.language;
+    const displayNames = new Intl.DisplayNames([language], { type: 'language' });
+
+    listNameDisplay.innerHTML = "Selected List: " + displayNames.of(listName);
+}
+
+loadLists();
+
 
 
 
@@ -224,6 +268,16 @@ function search() {
                                             const label = document.createElement('strong');
                                             label.appendChild(document.createTextNode(`${key}:`));
                                             const value = document.createElement('span');
+                                            if(key === 'Race'){
+                                                value.setAttribute('class', 'race')
+                                            }
+                                            else if(key === 'Publisher'){
+                                                value.setAttribute('class', 'publisher')
+                                            }
+                                            else if(key === 'Power'){
+                                                value.setAttribute('class', 'power')
+                                            }
+                                            
                                             value.appendChild(document.createTextNode(` ${e[key]}`));
                                             item.appendChild(label);
                                             item.appendChild(value);
@@ -287,12 +341,26 @@ function search() {
                                                 if (key === 'name') {
                                                     // Title
                                                     const title = document.createElement('h2');
+                                                    title.setAttribute('class', 'name');
                                                     title.appendChild(document.createTextNode(`${heroInfo[key]}`));
                                                     item.appendChild(title);
                                                 } else {
+                                                    
                                                     const label = document.createElement('strong');
                                                     label.appendChild(document.createTextNode(`${key}:`));
                                                     const value = document.createElement('span');
+                                                    if(key === 'Race'){
+                                                        value.setAttribute('class', 'race')
+                                                    }
+                                                    else if(key === 'Publisher'){
+                                                        value.setAttribute('class', 'publisher')
+                                                    }
+                                                    else if(key === 'Power'){
+                                                        value.setAttribute('class', 'power')
+                                                    }
+                                                    
+                                                    
+
                                                     value.appendChild(document.createTextNode(` ${heroInfo[key]}`));
                                                     item.appendChild(label);
                                                     item.appendChild(value);
@@ -318,8 +386,131 @@ function search() {
         }
         
 }
+document.getElementById('sort-button').addEventListener('click', sort);
 
+function sort() {
+    const selectFilter = document.getElementById('sort-dropdown').value;
+    
+    if (selectFilter === 'name') {
+        // Sort by name
+        sortByName('search-results-list-ul');
+        sortByName('list-ul');
+        return;
+    }
+    if (selectFilter === 'Race') {
+        // Sort by name
+        sortByRace('search-results-list-ul');
+        sortByRace('list-ul');
+        return;
+    }
+    if (selectFilter === 'Publisher') {
+        // Sort by name
+        sortByName('search-results-list-ul');
+        sortByName('list-ul');
+        return;
+    }
+    if (selectFilter === 'Power') {
+        // Sort by name
+        sortByName('search-results-list-ul');
+        sortByName('list-ul');
+        return;
+    }
+    // For sorting by other properties (race, publisher, power), you can implement
+    // similar functions and call them as needed.
+    // Example: sortByProperty('search-results-list-ul', selectFilter);
+}
 
+function sortByName(listId) {
+    const l = document.getElementById(listId);
+    const listItems = Array.from(l.getElementsByTagName('li'));
+    
+    listItems.sort((a, b) => {
+        const textA = a.textContent.trim().toLowerCase();
+        const textB = b.textContent.trim().toLowerCase();
+        // console.log(a.classList)
+        if (a.classList.contains('name')) {
+            const nameA = a.querySelector('h2.name').textContent.trim().toLowerCase();
+            const nameB = b.querySelector('h2.name').textContent.trim().toLowerCase();
+            return nameA.localeCompare(nameB);
+        } else {
+            return textA.localeCompare(textB);
+        }
+    });
+
+    l.innerHTML = '';
+    listItems.forEach(item => {
+        l.appendChild(item);
+    });
+}
+
+function sortByRace(listId) {
+    const l = document.getElementById(listId);
+    const listItems = Array.from(l.getElementsByTagName('li'));
+
+    listItems.sort((a, b) => {
+        const textA = a.textContent.trim().toLowerCase();
+        const textB = b.textContent.trim().toLowerCase();
+
+        const raceA = a.querySelector('.race');
+        const raceB = b.querySelector('.race');
+
+        if (raceA && raceB) {
+            const raceTextA = raceA.textContent.trim().toLowerCase();
+            const raceTextB = raceB.textContent.trim().toLowerCase();
+            return raceTextA.localeCompare(raceTextB);
+        } else {
+            return textA.localeCompare(textB);
+        }
+    });
+
+    l.innerHTML = '';
+    listItems.forEach(item => {
+        l.appendChild(item);
+    });
+}
+function sortByPublisher(listId) {
+    const l = document.getElementById(listId);
+    const listItems = Array.from(l.getElementsByTagName('li'));
+
+    listItems.sort((a, b) => {
+        const publisherA = a.querySelector('.publisher');
+        const publisherB = b.querySelector('.publisher');
+
+        if (publisherA && publisherB) {
+            const publisherTextA = publisherA.textContent.trim().toLowerCase();
+            const publisherTextB = publisherB.textContent.trim().toLowerCase();
+            return publisherTextA.localeCompare(publisherTextB);
+        }
+        return 0;
+    });
+
+    l.innerHTML = '';
+    listItems.forEach(item => {
+        l.appendChild(item);
+    });
+}
+
+function sortByPower(listId) {
+    const l = document.getElementById(listId);
+    const listItems = Array.from(l.getElementsByTagName('li'));
+
+    listItems.sort((a, b) => {
+        const powerA = a.querySelector('.power');
+        const powerB = b.querySelector('.power');
+
+        if (powerA && powerB) {
+            const powerTextA = powerA.textContent.trim().toLowerCase();
+            const powerTextB = powerB.textContent.trim().toLowerCase();
+            return powerTextA.localeCompare(powerTextB);
+        }
+        return 0;
+    });
+
+    l.innerHTML = '';
+    listItems.forEach(item => {
+        l.appendChild(item);
+    });
+}
 
 function addToList(){
     let id = this.id;
