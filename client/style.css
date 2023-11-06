@@ -42,7 +42,7 @@ body {
     margin: 5px;
 }
 
-#filter-dropdown {
+#filter-dropdown{
     height: 70%;
     border-color: transparent;
     outline: none;
@@ -144,7 +144,7 @@ body {
     padding: 5px;
 }
 
-#create-list button{
+#create-list button, #sort-button{
     background-color: rgb(61, 66, 65);
     color: white;
     border-radius: 10px;
@@ -251,4 +251,21 @@ body {
     margin: 10px;
     justify-content: center;
     align-content: center;
+}
+
+#sort-dropdown{
+    height: 20%;
+    border-color: transparent;
+    outline: none;
+    width: 80%;
+    margin: 5px;
+    background-color: rgb(61, 66, 65);
+    color: white;
+    border-radius: 10px;
+    text-align: center;
+}
+#sort-button:hover, #sort-dropdown:hover{
+    background-color: rgb(40, 40, 40);
+    color: white;
+    cursor: pointer;
 }
