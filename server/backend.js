@@ -30,7 +30,7 @@ let superhero_powers = [];
 //   console.error(`Error reading or parsing the JSON file: ${err}`);
 // }
 
-const db_uri = 'mongodb+srv://' + username + ':' + password + '@superherodata.llwdtto.mongodb.net/superhero?retryWrites=true&w=majority';
+const db_uri = 'mongodb+srv://' + 'superhero_user' + ':' + 'Qk2G1Dt93LiZawv5' + '@superherodata.llwdtto.mongodb.net/superhero?retryWrites=true&w=majority';
 
 mongoose.connect(db_uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -144,9 +144,10 @@ app.delete('/delete-list/:name', (req, res) => {
   app.route("/create-list")
   .put((req, res) => {
     const listName = req.body.name;
+    console.log(listName.length)
 
     // Validate that 'name' is provided and has a reasonable length
-    if (!listName || typeof listName !== 'string' || listName.length < 1 || listName.length > 255) {
+    if (!listName || typeof listName !== 'string' || listName.length < 1 || listName.length > 255 || listName.indexOf('<') !== -1 || listName.indexOf('>') !== -1) {
       return res.status(400).send("Invalid request: 'name' is missing or invalid.");
     }
 
