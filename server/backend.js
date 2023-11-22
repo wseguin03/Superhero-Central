@@ -39,7 +39,7 @@ router.use(express.json());
 app.use(express.json()); // Add this line
 const path = require('path');
 
-app.use('/', express.static(path.join(__dirname, '..', 'client')));
+app.use('/api', express.static(path.join(__dirname, '..', 'client')));
 
 // app.get('/info', (req, res) => {
 //   res.send(superhero_info);
