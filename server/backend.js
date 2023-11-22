@@ -17,18 +17,6 @@ const password = process.env.api_password;
 let superhero_info = [];
 let superhero_powers = [];
 
-// const filePath = 'superhero_info.json';
-// const filePath2 = 'superhero_powers.json';
-
-// try {
-//   const data = fs.readFileSync(filePath, 'utf8');
-//   const data2 = fs.readFileSync(filePath2, 'utf8');
-
-//   superhero_info = JSON.parse(data);
-//   superhero_powers = JSON.parse(data2);
-// } catch (err) {
-//   console.error(`Error reading or parsing the JSON file: ${err}`);
-// }
 
 const db_uri = 'mongodb+srv://' + 'superhero_user' + ':' + 'Qk2G1Dt93LiZawv5' + '@superherodata.llwdtto.mongodb.net/superhero?retryWrites=true&w=majority';
 
