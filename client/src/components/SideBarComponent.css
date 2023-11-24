@@ -1,0 +1,14 @@
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: #474448ff;;
+    padding: 20px;
+    overflow: auto;
+}
+
+/* --onyx: #474448ff;
+--raisin-black: #2d232eff;
+--bone: #e0ddcfff; */
