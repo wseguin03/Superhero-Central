@@ -6,7 +6,7 @@ import Loading from "./Loading";
 import ErrorMessage from "./ErrorMessage";
 import MainScreenComponent from "./MainScreenComponent";
 import "./RegisterComponent.css";
-import { set } from "mongoose";
+// import { set } from "mongoose";
 import axios from "axios";
 
 function RegisterComponent({ history }) {
@@ -113,7 +113,7 @@ function RegisterComponent({ history }) {
         </Form>
         <Row className="py-3">
           <Col>
-            Have an Account ? <Link to="/login">Login</Link>
+            Have an Account ? <a href='/login'>Login</a>
           </Col>
         </Row>
       </div>

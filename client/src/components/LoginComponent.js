@@ -64,9 +64,10 @@ const LoginComponent = ({history}) => {
         Submit
       </Button>
       <Row className='login-register'>
-        <Col>
-        New Member?  <Link to ='register'>Register Here!</Link></Col>
-      </Row>
+  <Col>
+    New Member? <a href='/register'>Register Here!</a>
+  </Col>
+</Row>
     </Form>
             </div>
         </MainScreenComponent>
