@@ -5,9 +5,11 @@ const router = express.Router();
 const fs = require('fs');
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const Info = require('./info');
-const Power = require('./powers');
-const List = require('./lists');
+const Info = require('./models/info');
+const Power = require('./models/powers');
+const List = require('./models/lists');
+const userRoutes = require('./routes/userRoutes');
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 require('dotenv').config();
 
@@ -35,11 +37,11 @@ mongoose.connect(db_uri, { useNewUrlParser: true, useUnifiedTopology: true })
   });
 
 // app.use('/', express.static('client'));
-router.use(express.json());
-app.use(express.json()); // Add this line
+// router.use(express.json());
+app.use(express.json())
 const path = require('path');
 
-app.use('/api', express.static(path.join(__dirname, '..', 'client')));
+app.use('/', express.static(path.join(__dirname, '..', 'client')));
 
 // app.get('/info', (req, res) => {
 //   res.send(superhero_info);
@@ -434,3 +436,9 @@ app.get('/info-db-name/:name', (req, res) => {
       res.status(500).send("Internal Server Error");
     });
 });
+
+
+app.use('/api/users', userRoutes)
+
+app.use(notFound);
+app.use(errorHandler);
