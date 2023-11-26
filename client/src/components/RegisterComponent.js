@@ -1,8 +1,9 @@
 import React from 'react'
+import MainScreenComponent from './MainScreenComponent'
 
 const RegisterComponent = () => {
   return (
-    <div>RegisterComponent</div>
+    <MainScreenComponent title='Register'>Register</MainScreenComponent>
   )
 }
 

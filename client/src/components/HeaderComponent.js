@@ -14,7 +14,7 @@ function HeaderComponent() {
           <Nav>
             <Nav.Link href="#home">Home</Nav.Link>
             <Nav.Link href="#link">My Lists</Nav.Link>
-            <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+            <NavDropdown title="More" id="basic-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">My Profile</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">
                 Logout

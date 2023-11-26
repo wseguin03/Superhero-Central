@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './LandingPageComponent.css';
 
 function LandingPageComponent() {
+
+    // useEffect(()=>{
+    //     const userInfo = localStorage.getItem('userInfo');
+    //     if(userInfo){
+    //         history.push('/mylists')
+    //     }
+    // },[history])
     return (
         <div className="landing-page">
             <div className='landing-page-main-container'>
