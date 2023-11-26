@@ -9,3 +9,7 @@
     font-size: 2rem;
     color: white;
 }
+.navbar {
+    display: flex;
+    justify-content: space-between;
+  }

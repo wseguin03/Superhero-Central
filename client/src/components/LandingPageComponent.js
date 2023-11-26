@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import './LandingPageComponent.css';
 
 function LandingPageComponent() {
@@ -8,8 +7,9 @@ function LandingPageComponent() {
             <div className='landing-page-main-container'>
                 <h2>A place to see all your favourite superheros!</h2>
                 <div className="button-container">
-                    <Link to="/login" className="login-button">Login</Link>
-                    <Link to="/register" className="signup-button">Sign Up</Link>
+                    <a href="/login" className="login-button">Login</a>
+                    <a href="/register" className="signup-button">Sign Up</a>
+                    
                 </div>
             </div>
         </div>

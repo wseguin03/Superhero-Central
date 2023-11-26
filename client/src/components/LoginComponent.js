@@ -1,8 +1,8 @@
 import React from 'react'
-
+import MainScreenComponent from './MainScreenComponent'
 const LoginComponent = () => {
   return (
-    <div>LoginComponent</div>
+    <MainScreenComponent title = 'Login'>Login</MainScreenComponent>
   )
 }
 
