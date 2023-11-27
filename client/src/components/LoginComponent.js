@@ -57,9 +57,9 @@ const LoginComponent = ({history}) => {
         <Form.Label>Password</Form.Label>
         <Form.Control type="password" placeholder="Password" onChange={(e)=>setPassword(e.target.value)}/>
       </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicCheckbox">
+      {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
         <Form.Check type="checkbox" label="Check me out" />
-      </Form.Group>
+      </Form.Group> */}
       <Button variant="primary" type="submit">
         Submit
       </Button>

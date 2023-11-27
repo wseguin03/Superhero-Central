@@ -1,0 +1,16 @@
+button{
+    margin-top: 10px;
+}
+.superhero-list li{
+    list-style: none;
+}
+.search-results{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.superhero-list{
+    width: 100%;
+    padding: 0;
+}

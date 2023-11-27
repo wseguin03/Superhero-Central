@@ -3,7 +3,11 @@ const Schema = mongoose.Schema;
 
 const listSchema = new Schema({
     "name": String,
-    "list": Array
+    "list": Array,
+    "user": String,
+    "public": Boolean,
+    "description": String,
+    
 });
 
 
