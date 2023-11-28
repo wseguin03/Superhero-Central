@@ -32,7 +32,7 @@ function RegisterComponent({ history }) {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(email)
+    // console.log(email)
     if (password !== confirmpassword) {
       setMessage("Passwords do not match");
     // } else dispatch(register(username, email, password));

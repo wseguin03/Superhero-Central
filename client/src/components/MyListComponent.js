@@ -1,140 +1,189 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Form, Container, Row, Card} from 'react-bootstrap';
-import Fuse from 'fuse.js';
-import './MyListComponent.css';
-
-
+import React, { useEffect, useState } from 'react'
+import MainScreenComponent from './MainScreenComponent'
+import './MyListComponent.css'
+import { Container, Row,Card, Col } from 'react-bootstrap';
+import { set } from 'mongoose';
 const MyListComponent = () => {
-  const [name, setName] = useState('');
-  const [publisher, setPublisher] = useState('');
-  const [race, setRace] = useState('');
-  const [power, setPower] = useState('');
-  const [searchResults, setSearchResults] = useState([]);  
-  const [backendData, setBackendData] = useState([]);
+  const [lists, setLists] = useState([]);
+  const [loginState, setLoginState] = useState(false);
 
-  
-    const [selectedHero, setSelectedHero] = useState(null);
 
-    
-const handleHeroClick = (hero) => {
-    if (selectedHero === hero) {
-      setSelectedHero(null); // deselect the superhero when it's clicked again
+  const [selectedList, setselectedList] = useState(null);
+  const [heros, setHeroes] = useState([]);
+  const [listInfo, setListInfo] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedMiniList, setselectedMiniList] = useState(null);
+
+  const handleListClick = (hero) => {
+    if (selectedList === hero) {
+      setselectedList(null); // deselect the superhero when it's clicked again
     } else {
-      setSelectedHero(hero);
+      setselectedList(hero);
     }
   };
 
-  
+  const handleMiniListClick = (hero) => {
+    if (selectedMiniList === hero) {
+      selectedMiniList(null); // deselect the superhero when it's clicked again
+    } else {
+      selectedMiniList(hero);
+    }
+  };
+
+
+
+
   useEffect(() => {
-    fetch('/info-db')
+    const userInfo = localStorage.getItem('userInfo');
+    if(userInfo){
+      setLoginState(true);
+    }
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('/create-list')
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data)
-        setBackendData(data);
-        // console.log("Backend Data: "+ backendData)
+        setLists(data);
       })
       .catch((error) => {
         console.error('Error fetching data: ', error);
       });
   }, []);
-//   console.log("Backend Data: "+ backendData)
-  const fuseOptions = {
-    keys: ['name', 'Publisher', 'Race', 'Power'], // Adjust keys based on your backendData structure
-    includeScore: true,
-    threshold: 0.3
-  };
 
-  const fuse = new Fuse(backendData, fuseOptions);
+  useEffect(() => {
+    if (lists.length > 0) {
+      // Only run if lists is not empty
+      Promise.all(lists.map(list =>
+        fetch(`list-db/${list.name}`)
+          .then((response) => response.json())
+      ))
+      .then(dataArray => {
+        // Sort each results array by lastChanged date in descending order
+        const sortedDataArray = dataArray.map(data => {
+          if (data.results) {
+            data.results.sort((a, b) => new Date(b.lastChanged) - new Date(a.lastChanged));
+          }
+          return data;
+        });
+  
+        setListInfo(sortedDataArray);
+        setLoading(false); // Set loading to false here, after listInfo is set
+      })
+      .catch((error) => {
+        console.error('Error fetching data: ', error);
+      });
+    }
+  }, [lists]);
+  
+  // if (!loading && listInfo.length > 0 && listInfo[0]) {
+  //   listInfo[0].results.forEach((result) => {
+  //     const name = result.info.name;
+  //     console.log(name);
+  //   });
+  // }
+
+
 
   
-  const performSearch = () => {
-    const searchCriteria = { name, Publisher: publisher, Race: race, Power: power };
-    let intersectionResults = [];
   
-    // Loop through each non-empty field and update search results
-    Object.keys(searchCriteria).forEach((field) => {
-      if (searchCriteria[field]) {
-        const results = fuse.search(searchCriteria[field]);
-        intersectionResults = intersectionResults.length === 0
-          ? results.map((result) => result.item)
-          : intersectionResults.filter((hero) => results.some((result) => result.item.id === hero.id));
-      }
-    });
-    setSearchResults(intersectionResults.length > 0 ? intersectionResults : backendData.slice(0, 10));
-    console.log("Search Results: ", intersectionResults);
-  };
-  
-
-
-  const userInfo = localStorage.getItem('userInfo');
-  const user = JSON.parse(userInfo);
 
   return (
-    <>
-        <Row className='search-input'>
-                <Container>
-                  <Form>
-                    <Form.Group controlId="name-search">
-                      <Form.Label>Search by name</Form.Label>
-                      <Form.Control type="name" placeholder="Enter a hero name" onChange={(e) => setName(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group controlId="publisher-search">
-                      <Form.Label>Search by publisher</Form.Label>
-                      <Form.Control type="publisher" placeholder="Enter a publisher" onChange={(e) => setPublisher(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group controlId="race-search">
-                      <Form.Label>Search by race</Form.Label>
-                      <Form.Control type="race" placeholder="Enter a race" onChange={(e) => setRace(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group controlId="power-search">
-                      <Form.Label>Search by power</Form.Label>
-                      <Form.Control type="power" placeholder="Enter a power" onChange={(e) => setPower(e.target.value)} />
-                    </Form.Group>
-                  
+  <MainScreenComponent title="Lists">
+     <Row>
+      <Container>
+        <h1>Public Lists</h1>
+        <ul className="public-lists">
+          {lists.map((list, index) => (
+            <li key={index} className="superhero-item" onClick={() => handleListClick(list)}>
+              <Card style={{ height: selectedList === list ? 'auto' : '7rem' }}>
+                <Card.Header>{list.name}</Card.Header>
+                <Card.Body>
+                  <Row className='list-body'>
+                    <Col className='list-body-column'>
+                      <Card.Text>
+                        {!loading && listInfo.length > 0 && listInfo[index] ? (
+                          <>
+                            <p><strong>Created By:</strong> {listInfo[index].user}</p>
+                          </>
+                        ) : null}
+                      </Card.Text>
+                    </Col>
+                    <Col className='list-body-column'>
+                      <Card.Text>
+                        {!loading && listInfo.length > 0 && listInfo[index] ? (
+                          <>
+                            <p><strong>Last Changed:</strong> {
+                              new Date(listInfo[index].lastChanged).toISOString().slice(0, 16)
+                            }</p>
+                          </>
+                        ) : null}
+                      </Card.Text>
+                    </Col>
+                    <Col className='list-body-column'>
+                      <Card.Text>
+                        <strong>Number of Heroes:</strong> {list.list.length}<br />
+                      </Card.Text>
+                    </Col>
+                    <Col className='list-body-column'>
+                      <Card.Text>
+                        <strong>Average rating:</strong> {list.rating}<br />
+                      </Card.Text>
+                    </Col>
+                  </Row>
+                  {selectedList === list && listInfo[index] && listInfo[index].results ? (
+                    
+                   <Card style={{ height: selectedList === list ? 'auto' : '7rem' }}>
+                  <Card.Text id='desc-tag'><h5><strong>Description:</strong> {list.description} <br /></h5></Card.Text>
 
-                    <Button variant="primary" onClick={performSearch}>
-                      Search
-                    </Button>
-                  </Form>
-                  {/* <SearchResults backendData={backendData} search={search} /> */}
-                </Container>
-        </Row>
-        <Row className='search-results'>
-        <Container>
-    <ul className="superhero-list">
-    
-      {searchResults.map((hero, index) => (
-        <li key={index} className="superhero-item" onClick={() => handleHeroClick(hero)}>
-          <Card style={{ height: selectedHero === hero ? '20rem' : '7rem' }}>
-            <Card.Header>{hero.name}</Card.Header>
-            <Card.Body>
-              <Card.Text>
-              <strong>Publisher:</strong> {hero.Publisher} <br />
-                {selectedHero === hero && (
-                  <>
-                    <br />
-                    <strong>Race:</strong> {hero.Race} <br />
-                    <strong>Gender:</strong> {hero.Gender} <br />
-                    <strong>Eye color:</strong> {hero["Eye color"]} <br />
-                    <strong>Hair color:</strong> {hero["Hair color"]} <br />
-                    <strong>Height:</strong> {hero.Height} cm <br />
-                    <strong>Skin color:</strong> {hero["Skin color"]} <br />
-                    <strong>Alignment:</strong> {hero.Alignment} <br />
-                    <strong>Weight:</strong> {hero.Weight} kg
-                  </>
-                )}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </li>
-      ))}
-    </ul>
-  </Container>
-
+                      <Card.Header>Hero Data</Card.Header>
+                      <Card.Body>
+                        {listInfo[index].results.map((hero, heroIndex) => (
+                          <div key={heroIndex}>
+                            <br />
+                            <h4><strong>Hero Name:</strong> {hero.info.name} <br /></h4>
+                            <strong>Publisher:</strong> {hero.info.Publisher} <br />
+                            <strong>Powers:</strong> {Object.entries(hero.power).map(([key, value], i) => (
+                              <span key={i}>{key}: {value.toString()}, </span>
+                            ))}
+                            <br />
+                            <strong>Race:</strong> {hero.info.Race} <br />
+                            <strong>Gender:</strong> {hero.info.Gender} <br />
+                            <strong>Eye color:</strong> {hero.info["Eye color"]} <br />
+                            <strong>Hair color:</strong> {hero.info["Hair color"]} <br />
+                            <strong>Height:</strong> {hero.info.Height} cm <br />
+                            <strong>Skin color:</strong> {hero.info["Skin color"]} <br />
+                            <strong>Alignment:</strong> {hero.info.Alignment} <br />
+                            <strong>Weight:</strong> {hero.info.Weight} kg
+                          </div>
+                      
+                        ))}
+                      </Card.Body>
+                    </Card>
+                  ) : null}
+                </Card.Body>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      </Container>
     </Row>
-    </>
-      );
-    };
-
+    <Row>
+      {loginState ? (
+        <Container>
+          Private Lists
+        </Container>
+      ) : (
+        <Container>
+          <p>Please login to view your private lists</p>
+        </Container>
+      )}
+    </Row>
+  </MainScreenComponent>      
+    
+  );
+}
 
 export default MyListComponent;
+

@@ -1,16 +1,15 @@
-button{
-    margin-top: 10px;
+.list-body-column{
+    justify-content: center;
+    /* align-items: center; */
+    display: flex;
 }
-.superhero-list li{
+.public-lists{
     list-style: none;
 }
-.search-results{
-    margin-top: 10px;
+.hero-data{
     display: flex;
     flex-direction: column;
-}
-
-.superhero-list{
-    width: 100%;
+    justify-content: space-between;
+    margin: 0;
     padding: 0;
 }

@@ -7,6 +7,8 @@ const listSchema = new Schema({
     "user": String,
     "public": Boolean,
     "description": String,
+    'rating': { type: Number, default: 0 },
+    'lastChanged': { type: Date, default: Date.now },
     
 });
 

@@ -24,6 +24,11 @@ function HeaderComponent() {
                 My Lists
                 </Link>
               </Nav.Link>
+              <Nav.Link href = '/hero-search'>
+              <Link to = '/hero-search'>
+                Search Heroes
+                </Link>
+              </Nav.Link>
             <NavDropdown title="More" id="basic-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">My Profile</NavDropdown.Item>
               <NavDropdown.Item

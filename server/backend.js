@@ -150,6 +150,7 @@ app.delete('/delete-list/:name', (req, res) => {
           return res.status(400).send("List already exists.");
         } else {
           const list = new List(req.body);
+
           list.name = sanitizedListName; // Store the sanitized name
           list.save()
             .then(() => {
@@ -189,13 +190,16 @@ app.delete('/delete-list/:name', (req, res) => {
     const sanitizedListName = sanitizeInput(listName);
 
     const list = new List(req.body);
-
+    console.log(list)
     List.findOne({ "name": sanitizedListName })
       .then((result) => {
         if (result) {
           result.list = req.body.list; // Update the list data
-
-          // Prevent unintended side effects by ensuring the name remains the same
+          result.user = req.body.user; // Update the user data
+          result.description = req.body.description; // Update the description data
+          result.rating = req.body.rating; // Update the ratings data
+          result.public = req.body.public; // Update the public data
+          result.lastChanged = new Date()     // Prevent unintended side effects by ensuring the name remains the same
           if (result.name !== sanitizedListName) {
             return res.status(400).send("Invalid request: 'name' cannot be changed.");
           }
@@ -275,7 +279,14 @@ app.get('/list-db/:name', (req, res) => {
         })
       )
       .then(() => {
-        res.json({ results: combinedResults });
+        res.json({ 
+          results: combinedResults,
+          user: result.user, // Add user property
+          description: result.description, // Add description property
+          public: result.public, // Add public property
+          rating: result.rating, // Add rating property
+          lastChanged: result.lastChanged // Add lastChanged property
+        });
       })
       .catch((error) => {
         console.error(error);
