@@ -105,6 +105,10 @@ const MyListComponent = () => {
                       </Card.Text>
                     </Col>
                   </Row>
+{/* 
+                  <Row className='ratings-reviews'>
+
+                  </Row> */}
                   {selectedList === list && listInfo[index] && listInfo[index].results ? (
                     
                    <Card style={{ height: selectedList === list ? 'auto' : '7rem' }}>

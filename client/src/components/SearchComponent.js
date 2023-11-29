@@ -88,32 +88,7 @@ const clearSelectedHeros = (hero) => {
     setSearchResults(intersectionResults.length > 0 ? intersectionResults : backendData.slice(0, 10));
     console.log("Search Results: ", intersectionResults);
   };
-  const createNewList = (name, description, list, isPublic) => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if(userInfo && userInfo.token){
-      fetch('/api/lists/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userInfo.token}`
-        },
-        body: JSON.stringify({
-          name,
-          description,
-          list,
-          public: isPublic
-        })
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('List created: ', data);
-      })
-      .catch((error) => {
-        console.error('Error creating list: ', error);
-      });
-    }
-  }
-
+ 
 
 
   const submitHandler = async (e) => {
@@ -134,7 +109,7 @@ const clearSelectedHeros = (hero) => {
           name: listName,
           description: listDescription, 
           list: selectedListHeros,
-          isPublic,
+          public: isPublic,
         },config)
         
         console.log(data);

@@ -118,8 +118,8 @@ const MyListComponent = () => {
                           <Card.Text>
                             {!loading && listInfo.length > 0 && listInfo[index] ? (
                               <>
+                                <p><strong>Last Changed:</strong></p>
                                 <p>
-                                  <strong>Last Changed:</strong>{' '}
                                   {new Date(listInfo[index].lastChanged)
                                     .toISOString()
                                     .slice(0, 16)}
@@ -180,7 +180,7 @@ const MyListComponent = () => {
                                     <strong>Height:</strong> {hero.info.Height} cm <br />
                                     <strong>Skin color:</strong> {hero.info["Skin color"]} <br />
                                     <strong>Alignment:</strong> {hero.info.Alignment} <br />
-                                    <strong>Weight:</strong> {hero.info.Weight} kg
+                                    <strong>Weight:</strong> {hero.info.Weight} kg <br />
                                   </>
                                 ) : null}
                                 <Button
@@ -191,7 +191,7 @@ const MyListComponent = () => {
                                 </Button>
                               </div>
                             ))}
-                            <Button id="edit-btn" variant="primary">
+                            <Button id="edit-btn" variant="primary" href={`/lists/${list._id}`}>
                               Edit
                             </Button>
                             <Button id="delete-btn" variant="danger">
