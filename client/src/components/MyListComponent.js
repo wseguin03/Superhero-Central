@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import MainScreenComponent from './MainScreenComponent'
 import './MyListComponent.css'
-import { Container, Row,Card, Col, Button } from 'react-bootstrap';
+import { Container, Row,Card, Col, Button, Dropdown } from 'react-bootstrap';
 const MyListComponent = () => {
-  const [selectedList, setselectedList] = useState(null);
+  const [selectedList, setSelectedList] = useState(null);
   const [listInfo, setListInfo] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loginState, setLoginState] = useState(false);
   const [privateLists, setPrivateLists] = useState([]);
-
-
-  const handleListClick = (hero) => {
-    if (selectedList === hero) {
-      setselectedList(null); // deselect the superhero when it's clicked again
-    } else {
-      setselectedList(hero);
-    }
-  };
-
+  const [selectedHero, setSelectedHero] = useState(null);
+  const handlePrivacyChange = (privacy) => {
+  // handle the privacy setting change
+  console.log('Selected privacy: ', privacy);
+};
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
     if(userInfo){
@@ -69,7 +64,22 @@ const MyListComponent = () => {
     }
   }, [privateLists]);
 
-  // console.log(JSON.stringify(listInfo))
+
+  const handleToggleListClick = (list) => {
+    setSelectedList((prevSelectedList) =>
+      prevSelectedList === list ? null : list
+    );
+    // Reset selected hero when toggling lists
+    setSelectedHero(null);
+  };
+
+  const handleToggleHeroClick = (hero) => {
+    setSelectedHero((prevSelectedHero) =>
+      prevSelectedHero === hero ? null : hero
+    );
+  };
+
+
 
 
 
@@ -80,94 +90,133 @@ const MyListComponent = () => {
       </div>
     )
   }else{
-  return (
-    <MainScreenComponent title="Private-Lists">
-     <Row>
-      <Container>
-        <ul className="private-lists">
-          {privateLists.map((list, index) => (
-            <li key={index} className="superhero-item" onClick={() => handleListClick(list)}>
-              <Card style={{ height: selectedList === list ? 'auto' : '7rem' }}>
-                <Card.Header>{list.name}</Card.Header>
-                <Card.Body>
-                  <Row className='list-body'>
-                    <Col className='list-body-column'>
-                      <Card.Text>
-                        {!loading && listInfo.length > 0 && listInfo[index] ? (
-                          <>
-                            <p><strong>Created By:</strong> {listInfo[index].user}</p>
-                          </>
-                        ) : null}
-                      </Card.Text>
-                    </Col>
-                    <Col className='list-body-column'>
-                      <Card.Text>
-                        {!loading && listInfo.length > 0 && listInfo[index] ? (
-                          <>
-                            <p><strong>Last Changed:</strong> {
-                              new Date(listInfo[index].lastChanged).toISOString().slice(0, 16)
-                            }</p>
-                          </>
-                        ) : null}
-                      </Card.Text>
-                    </Col>
-                    <Col className='list-body-column'>
-                      <Card.Text>
-                        <strong>Number of Heroes:</strong> {list.list.length}<br />
-                      </Card.Text>
-                    </Col>
-                    <Col className='list-body-column'>
-                      <Card.Text>
-                        <strong>Average rating:</strong> {list.rating}<br />
-                      </Card.Text>
-                    </Col>
-                  </Row>
-                  {selectedList === list && listInfo[index] && listInfo[index].results ? (
-                    
-                   <Card style={{ height: selectedList === list ? 'auto' : '7rem' }}>
-                  <Card.Text id='desc-tag'><h5><strong>Description:</strong> {list.description} <br /></h5></Card.Text>
-
-                      <Card.Header>Hero Data</Card.Header>
-                      <Card.Body>
-                        {listInfo[index].results.map((hero, heroIndex) => (
-                          <div key={heroIndex}>
+  
+    return (
+      <MainScreenComponent title="Private-Lists">
+        <Row>
+          <Container>
+            <ul className="private-lists">
+              {privateLists.map((list, index) => (
+                <li key={index} className="superhero-item">
+                  <Card>
+                    <Card.Header>{list.name}</Card.Header>
+                    <Card.Body>
+                      <Row className="list-body">
+                        <Col className="list-body-column">
+                          <Card.Text>
+                            {!loading && listInfo.length > 0 && listInfo[index] ? (
+                              <>
+                                <p>
+                                  <strong>Created By:</strong>{' '}
+                                  {listInfo[index].user}
+                                </p>
+                              </>
+                            ) : null}
+                          </Card.Text>
+                        </Col>
+                        <Col className="list-body-column">
+                          <Card.Text>
+                            {!loading && listInfo.length > 0 && listInfo[index] ? (
+                              <>
+                                <p>
+                                  <strong>Last Changed:</strong>{' '}
+                                  {new Date(listInfo[index].lastChanged)
+                                    .toISOString()
+                                    .slice(0, 16)}
+                                </p>
+                              </>
+                            ) : null}
+                          </Card.Text>
+                        </Col>
+                        <Col className="list-body-column">
+                          <Card.Text>
+                            <strong>Number of Heroes:</strong> {list.list.length}
                             <br />
-                            <h4><strong>Hero Name:</strong> {hero.info.name} <br /></h4>
-                            <strong>Publisher:</strong> {hero.info.Publisher} <br />
-                            <strong>Powers:</strong> {Object.entries(hero.power).map(([key, value], i) => (
-                              <span key={i}>{key}: {value.toString()}, </span>
+                          </Card.Text>
+                        </Col>
+                        <Col className="list-body-column">
+                          <Card.Text>
+                            <strong>Average rating:</strong> {list.rating}
+                            <br />
+                          </Card.Text>
+                        </Col>
+
+                        <Col className="list-body-column">
+                          <Card.Text>
+                            <strong>Public: </strong> {list.public ? 'Yes' : 'No'}
+                            <br />
+                          </Card.Text>
+                        </Col>
+                      </Row>
+                      {selectedList === list && listInfo[index] && listInfo[index].results ? (
+                        <Card>
+                          <Card.Text id="desc-tag">
+                            <h5>
+                              <strong>Description:</strong> {list.description}{' '}
+                              <br />
+                            </h5>
+                          </Card.Text>
+                          <Card.Header>Hero Data</Card.Header>
+                          <Card.Body>
+                            {listInfo[index].results.map((hero, heroIndex) => (
+                              <div key={heroIndex}>
+                                <br />
+                                <h4>
+                                  <strong>Hero Name:</strong> {hero.info.name}{' '}
+                                  <br />
+                                </h4>
+                                <strong>Publisher:</strong> {hero.info.Publisher}{' '}
+                                <br />
+                                <strong>Powers:</strong> {Object.entries(hero.power).map(([key, value], i) => (
+                                  value ? <span key={i}>{key}, </span> : null
+                                ))}
+                                <br />
+                                {selectedHero === hero ? (
+                                  <>
+                                    <strong>Race:</strong> {hero.info.Race} <br />
+                                    <strong>Gender:</strong> {hero.info.Gender} <br />
+                                    <strong>Eye color:</strong> {hero.info["Eye color"]} <br />
+                                    <strong>Hair color:</strong> {hero.info["Hair color"]} <br />
+                                    <strong>Height:</strong> {hero.info.Height} cm <br />
+                                    <strong>Skin color:</strong> {hero.info["Skin color"]} <br />
+                                    <strong>Alignment:</strong> {hero.info.Alignment} <br />
+                                    <strong>Weight:</strong> {hero.info.Weight} kg
+                                  </>
+                                ) : null}
+                                <Button
+                                  variant="primary"
+                                  onClick={() => handleToggleHeroClick(hero)}
+                                >
+                                  View Hero
+                                </Button>
+                              </div>
                             ))}
-                            <br />
-                            <strong>Race:</strong> {hero.info.Race} <br />
-                            <strong>Gender:</strong> {hero.info.Gender} <br />
-                            <strong>Eye color:</strong> {hero.info["Eye color"]} <br />
-                            <strong>Hair color:</strong> {hero.info["Hair color"]} <br />
-                            <strong>Height:</strong> {hero.info.Height} cm <br />
-                            <strong>Skin color:</strong> {hero.info["Skin color"]} <br />
-                            <strong>Alignment:</strong> {hero.info.Alignment} <br />
-                            <strong>Weight:</strong> {hero.info.Weight} kg
-                          </div>
-                      
-                        ))}
-                        <Button id='edit-btn'variant='primary'>Edit</Button>
-                        <Button id='delete-btn'variant="danger">Delete</Button>
-                      </Card.Body>
-                    </Card>
-                  ) : null}
-                  {}
-                  
-                </Card.Body>
-                
-
-              </Card>
-            </li>
-          ))}
-        </ul>
-      </Container>
-    </Row>
-  </MainScreenComponent>      
-  )
+                            <Button id="edit-btn" variant="primary">
+                              Edit
+                            </Button>
+                            <Button id="delete-btn" variant="danger">
+                              Delete
+                            </Button>
+                          </Card.Body>
+                        </Card>
+                      ) : null}
+                    </Card.Body>
+                    <Button
+                      variant="primary"
+                      onClick={() => handleToggleListClick(list)}
+                    >
+                      View List
+                    </Button>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </Row>
+      </MainScreenComponent>
+    );
+  };
   }
-}
+
 
 export default MyListComponent

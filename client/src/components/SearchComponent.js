@@ -1,8 +1,11 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Form, Container, Row, Card} from 'react-bootstrap';
+import { Button, Form, Container, Row, Card, ToggleButton, ToggleButtonGroup, Dropdown} from 'react-bootstrap';
 import Fuse from 'fuse.js';
 import './SearchComponent.css';
 import MainScreenComponent from './MainScreenComponent';
+import Loading from './Loading';
+import ErrorMessage from './ErrorMessage';
+import axios from 'axios';
 
 
 const SearchComponent = () => {
@@ -15,6 +18,9 @@ const SearchComponent = () => {
   const [selectedListHeros, setSelectedListHeros] = useState([]);
   const [listName, setListName] = useState('');
   const [listDescription, setListDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
     const [selectedHero, setSelectedHero] = useState();
     // const [selectedHeroCard, setselectedHeroCard] = useState(null);
@@ -82,55 +88,78 @@ const clearSelectedHeros = (hero) => {
     setSearchResults(intersectionResults.length > 0 ? intersectionResults : backendData.slice(0, 10));
     console.log("Search Results: ", intersectionResults);
   };
-  
-//   const submitHandler = async (e) => {
-//     e.preventDefault();
-//     // console.log(email)
-//     if (password !== confirmpassword) {
-//       setMessage("Passwords do not match");
-//     // } else dispatch(register(username, email, password));
-//     }else{
-//         setMessage(null)
-//         try {
-//             setLoading(true)
-//             const config = {
-//                 headers:{
-//                     'Content-type':'application/json'
-//                 }
-//             }
-//             const {data} = await axios.post('/create-list',{listName,listDescription,selectedListHeros},config)
-//             console.log(data);
-//             localStorage.setItem('userInfo', JSON.stringify(data));
-//             setLoading(false)
-//             setError(false)
+  const createNewList = (name, description, list, isPublic) => {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    if(userInfo && userInfo.token){
+      fetch('/api/lists/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userInfo.token}`
+        },
+        body: JSON.stringify({
+          name,
+          description,
+          list,
+          public: isPublic
+        })
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('List created: ', data);
+      })
+      .catch((error) => {
+        console.error('Error creating list: ', error);
+      });
+    }
+  }
+
+
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    if(userInfo && userInfo.token){
+    try{
+      console.log("List Name: ", listName);
+        const config = {
+            headers:{
+                'Content-type':'application/json',
+                'Authorization': `Bearer ${userInfo.token}`
+
+            }
+        }
+        setLoading(true)
+        const {data} = await axios.post('/api/lists/create',{
+          name: listName,
+          description: listDescription, 
+          list: selectedListHeros,
+          isPublic,
+        },config)
         
-//     }
-//     catch(error){
-//         setError(error.response.data.message)
-//         setLoading(false)
-//     }
-// }
-//   };
+        console.log(data);
+        
+        setLoading(false)
+        setError(false)
+      
+        // history.push('/mylist')
+    }catch(error){
+       setError(error.response.data.message)
+       setLoading(false)
+}}
+}
 
-
-
-
-
-
-
-
-
-  const userInfo = localStorage.getItem('userInfo');
-  const user = JSON.parse(userInfo);
 
   return (
     <MainScreenComponent title= 'Search For Heros'>
 <Row>
         <Container>
           <h3>Create a List</h3>
-          <Form>
+          {error &&<ErrorMessage variant='danger'>{error}</ErrorMessage>}
+          {loading && <Loading/>}
+          <Form onSubmit={submitHandler}>
                     <Form.Group controlId="list-name">
-                      <Form.Label>Search by name</Form.Label>
+                      <Form.Label>List Name</Form.Label>
                       <Form.Control type="list-name" placeholder="Enter a list name"
                        onChange={(e) => setListName(e.target.value)}/>
                     </Form.Group>
@@ -142,12 +171,14 @@ const clearSelectedHeros = (hero) => {
                       
                     </Form.Group>
 
-                    <Button variant="primary">
+                    <Button variant="primary" type='submit'>
                       Create List
                     </Button>
                     <Button className = "clear-btn"variant="primary" onClick={clearSelectedHeros}>
                       Clear List
                     </Button>
+
+                    <Dropdown>Test</Dropdown>
                   </Form>
           </Container>
 </Row>

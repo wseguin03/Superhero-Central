@@ -241,6 +241,9 @@
  select {
    text-transform: none;
  }
+button {
+  transition: none !important;
+}
  [role="button"] {
    cursor: pointer;
  }
