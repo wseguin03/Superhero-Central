@@ -8,12 +8,13 @@ import './LoginComponent.css';
 import axios from 'axios';
 import Loading from './Loading';
 import ErrorMessage from './ErrorMessage';
-const LoginComponent = ({history}) => {
+const LoginComponent = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loginState, setLoginState] = useState(false);
     
     
 
@@ -33,6 +34,9 @@ const LoginComponent = ({history}) => {
             localStorage.setItem('userInfo', JSON.stringify(data));
             
             setLoading(false)
+            setError(false)
+            setLoginState(true);
+            // history.push('/mylist')
         }catch(error){
            setError(error.response.data.message)
            setLoading(false)
@@ -60,9 +64,11 @@ const LoginComponent = ({history}) => {
       {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
         <Form.Check type="checkbox" label="Check me out" />
       </Form.Group> */}
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
+        <Button variant="primary" type="submit">
+          Sign in
+        </Button>
+      
+      
       <Row className='login-register'>
   <Col>
     New Member? <a href='/register'>Register Here!</a>

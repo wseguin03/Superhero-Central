@@ -2,17 +2,13 @@ import React, { useEffect, useState } from 'react'
 import MainScreenComponent from './MainScreenComponent'
 import './PublicListComponent.css'
 import { Container, Row,Card, Col } from 'react-bootstrap';
-import { set } from 'mongoose';
+
 const MyListComponent = () => {
   const [lists, setLists] = useState([]);
   const [loginState, setLoginState] = useState(false);
-
-
   const [selectedList, setselectedList] = useState(null);
-  const [heros, setHeroes] = useState([]);
   const [listInfo, setListInfo] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedMiniList, setselectedMiniList] = useState(null);
 
   const handleListClick = (hero) => {
     if (selectedList === hero) {
