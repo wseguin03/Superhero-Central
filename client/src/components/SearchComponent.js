@@ -83,34 +83,34 @@ const clearSelectedHeros = (hero) => {
     console.log("Search Results: ", intersectionResults);
   };
   
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    // console.log(email)
-    if (password !== confirmpassword) {
-      setMessage("Passwords do not match");
-    // } else dispatch(register(username, email, password));
-    }else{
-        setMessage(null)
-        try {
-            setLoading(true)
-            const config = {
-                headers:{
-                    'Content-type':'application/json'
-                }
-            }
-            const {data} = await axios.post('/create-list',{listName,listDescription,selectedListHeros},config)
-            console.log(data);
-            localStorage.setItem('userInfo', JSON.stringify(data));
-            setLoading(false)
-            setError(false)
+//   const submitHandler = async (e) => {
+//     e.preventDefault();
+//     // console.log(email)
+//     if (password !== confirmpassword) {
+//       setMessage("Passwords do not match");
+//     // } else dispatch(register(username, email, password));
+//     }else{
+//         setMessage(null)
+//         try {
+//             setLoading(true)
+//             const config = {
+//                 headers:{
+//                     'Content-type':'application/json'
+//                 }
+//             }
+//             const {data} = await axios.post('/create-list',{listName,listDescription,selectedListHeros},config)
+//             console.log(data);
+//             localStorage.setItem('userInfo', JSON.stringify(data));
+//             setLoading(false)
+//             setError(false)
         
-    }
-    catch(error){
-        setError(error.response.data.message)
-        setLoading(false)
-    }
-}
-  };
+//     }
+//     catch(error){
+//         setError(error.response.data.message)
+//         setLoading(false)
+//     }
+// }
+//   };
 
 
 

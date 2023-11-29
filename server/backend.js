@@ -9,6 +9,8 @@ const Info = require('./models/info');
 const Power = require('./models/powers');
 const List = require('./models/lists');
 const userRoutes = require('./routes/userRoutes');
+const listRoutes = require('./routes/listRoutes');
+
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 require('dotenv').config();
@@ -450,6 +452,8 @@ app.get('/info-db-name/:name', (req, res) => {
 
 
 app.use('/api/users', userRoutes)
+app.use('/api/lists', listRoutes)
+
 
 app.use(notFound);
 app.use(errorHandler);

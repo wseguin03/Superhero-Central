@@ -24,6 +24,11 @@ function HeaderComponent() {
                 My Lists
                 </Link>
               </Nav.Link>
+              <Nav.Link href = '/public-lists'>
+              <Link to = '/public-lists'>
+                Public Lists
+                </Link>
+              </Nav.Link>
               <Nav.Link href = '/hero-search'>
               <Link to = '/hero-search'>
                 Search Heroes

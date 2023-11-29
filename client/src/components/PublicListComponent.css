@@ -1,0 +1,15 @@
+.list-body-column{
+    justify-content: center;
+    /* align-items: center; */
+    display: flex;
+}
+.public-lists{
+    list-style: none;
+}
+.hero-data{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+}

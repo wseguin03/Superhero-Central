@@ -6,7 +6,7 @@ import LoginComponent from './components/LoginComponent';
 import RegisterComponent from './components/RegisterComponent';
 import SearchComponent from './components/SearchComponent';
 import MyListComponent from './components/MyListComponent';
-
+import PublicListComponent from './components/PublicListComponent';
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +17,8 @@ function App() {
         <Route path="/register" element={<RegisterComponent />} />
         <Route path="/hero-search" element={<SearchComponent/>} />
         <Route path="/mylists" element={<MyListComponent/>} />
+        <Route path="/public-lists" element={<PublicListComponent/>} />
+
 
 
       </Routes>
