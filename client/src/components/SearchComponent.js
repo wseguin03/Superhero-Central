@@ -50,21 +50,60 @@ const clearSelectedHeros = (hero) => {
   };
 
   console.log(listName);
+  // useEffect(() => {
+  //   fetch('/info-db')
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       // console.log(data)
+  //       setBackendData(data);
+  //       // console.log("Backend Data: "+ backendData)
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching data: ', error);
+  //     });
+  // }, []);
+
   useEffect(() => {
     fetch('/info-db')
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data)
         setBackendData(data);
-        // console.log("Backend Data: "+ backendData)
       })
       .catch((error) => {
         console.error('Error fetching data: ', error);
       });
   }, []);
-//   console.log("Backend Data: "+ backendData)
+
+
+const [powersData, setPowersData] = useState([]);
+
+useEffect(() => {
+  fetch('/power-db')
+    .then((response) => response.json())
+    .then((data) => {
+      setPowersData(data);
+    })
+    .catch((error) => {
+      console.error('Error fetching powers: ', error);
+    });
+}, []);
+
+// console.log("Powers Data: ", powersData);
+  useEffect(() => {
+    if (backendData.length > 0 && powersData.length > 0) {
+      const heroesWithPowers = backendData.map((hero) => {
+        const heroPowers = powersData.find((power) => power.hero_names === hero.name);
+        const powersArray = heroPowers ? Object.keys(heroPowers).filter(power => heroPowers[power] === "True") : [];
+        return { ...hero, powers: powersArray };
+      });
+
+      setBackendData(heroesWithPowers);
+    }
+  }, [backendData, powersData]);
+  
+  // console.log("Backend Data: "+ JSON.stringify(backendData))
   const fuseOptions = {
-    keys: ['name', 'Publisher', 'Race', 'Power'], // Adjust keys based on your backendData structure
+    keys: ['name', 'Publisher', 'Race', 'powers'], // Adjust keys based on your backendData structure
     includeScore: true,
     threshold: 0.3
   };
@@ -73,9 +112,9 @@ const clearSelectedHeros = (hero) => {
 
   
   const performSearch = () => {
-    const searchCriteria = { name, Publisher: publisher, Race: race, Power: power };
+    const searchCriteria = { name, Publisher: publisher, Race: race, 'powers': power };
     let intersectionResults = [];
-  
+
     // Loop through each non-empty field and update search results
     Object.keys(searchCriteria).forEach((field) => {
       if (searchCriteria[field]) {
@@ -192,14 +231,15 @@ const clearSelectedHeros = (hero) => {
     
       {searchResults.map((hero, index) => (
         <li key={index} className="superhero-item" onClick={() => handleHeroClick(hero)}>
-          <Card style={{ height: selectedHero === hero ? 'auto' : '7rem' }}>
+          <Card style={{ height: selectedHero === hero ? 'auto' : 'auto' }}>
             <Card.Header>{hero.name}</Card.Header>
             <Card.Body>
               <Card.Text>
               <strong>Publisher:</strong> {hero.Publisher} <br />
-                {selectedHero === hero && (
+                          {selectedHero === hero && (
                   <>
                     <br />
+                    <strong>Powers:</strong> {hero.powers.join(', ')} <br />
                     <strong>Race:</strong> {hero.Race} <br />
                     <strong>Gender:</strong> {hero.Gender} <br />
                     <strong>Eye color:</strong> {hero["Eye color"]} <br />
@@ -212,8 +252,7 @@ const clearSelectedHeros = (hero) => {
                 )}
 
               </Card.Text>
-              <a href={`https://duckduckgo.com/?q=${encodeURIComponent(hero.name)}`} target="_blank" rel="noopener noreferrer">
-                <Button color="primary">Search Hero</Button>
+              <a href={`https://duckduckgo.com/?q=${encodeURIComponent(hero.name + ' by ' + hero.Publisher)}`} target="_blank" rel="noopener noreferrer">                <Button color="primary">Search Hero</Button>
                 </a>
                 <Button className='list-btn'variant="primary" onClick={handleAddToList}>
                       Add to List
