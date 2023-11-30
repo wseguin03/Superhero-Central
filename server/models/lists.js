@@ -8,9 +8,15 @@ const listSchema = new Schema({
     "user": String,
     "public": {type: Boolean, default: false},
     "description": String,
-    'rating': { type: Number, default: 0 },
-    'lastChanged': { type: Date, default: Date.now },
-    'ratingCount': { type: Number, default: 0 },
+    'rating': Array,
+    'lastChanged': { 
+        type: Date, 
+        default: () => {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            return new Date(now.getTime() - offset);
+        }
+    },    
 
     
 });

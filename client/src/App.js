@@ -8,6 +8,7 @@ import SearchComponent from './components/SearchComponent';
 import MyListComponent from './components/MyListComponent';
 import PublicListComponent from './components/PublicListComponent';
 import EditListComponent from './components/EditListComponent';
+import ReviewComponent from './components/ReviewComponent';
 function App() {
   return (
     <BrowserRouter>
@@ -20,7 +21,7 @@ function App() {
         <Route path="/mylists" element={<MyListComponent/>} />
         <Route path="/public-lists" element={<PublicListComponent/>} />
         <Route path = '/lists/:id' element = {<EditListComponent/>} />
-        <Route path = '/review/:id' element = {<EditListComponent/>} />
+        <Route path = 'lists/:id/review' element = {<ReviewComponent/>} />
 
 
 

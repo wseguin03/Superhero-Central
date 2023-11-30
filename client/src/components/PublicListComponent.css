@@ -13,3 +13,18 @@
     margin: 0;
     padding: 0;
 }
+.review-card{
+    margin-top: 10px;
+    padding: 10px;
+    
+}
+#desc-tag{
+    display: flex;
+    justify-content: center;
+}
+.review-item{
+    background-color: rgba(110, 122, 132, 0.683);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
