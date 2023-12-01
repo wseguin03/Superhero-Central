@@ -4,33 +4,42 @@ const generateToken = require('../utils/generateToken');
 
 
 const registerUser = asyncHandler(async (req, res) => {
-    const {username, email, password} = req.body;
+    const { username, email, password } = req.body;
 
-    const userExists = await User.findOne({email});
+    // Check if email is in proper format
+    const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+    if (!emailRegex.test(email)) {
+        res.status(400);
+        throw new Error('Invalid email format');
+    }
 
-    if(userExists){
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
         res.status(400);
         throw new Error('User already exists');
     }
+
     const user = await User.create({
         username,
         email,
         password
     });
-    if(user){
+
+    if (user) {
         res.status(201).json({
             _id: user._id,
             username: user.username,
             email: user.email,
             isAdmin: user.isAdmin,
-            token: generateToken(user._id)
-
+            token: generateToken(user._id),
+            isFlagged: user.isFlagged,
+            isVerified: user.isVerified
         });
-}else{
-    res.status(400);
-    throw new Error('Invalid user data');
-}
-
+    } else {
+        res.status(400);
+        throw new Error('Invalid user data');
+    }
 });
 
 
@@ -53,4 +62,33 @@ const authUser = asyncHandler(async (req, res) => {
     }
 });
     
-module.exports = {registerUser, authUser};
+
+const changePassword = asyncHandler(async (req, res) => {
+    // Check if req.user exists and has an 'id' property
+    console.log(req.user);
+    if (!req.user || !req.user.id) {
+        res.status(401);
+        throw new Error('User not authenticated');
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (user && (await user.matchPasswords(req.body.oldPassword))) {
+        user.password = req.body.newPassword;
+        await user.save();
+
+        res.json({
+            _id: user.id,
+            username: user.username,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            token: generateToken(user._id)
+        });
+    } else {
+        res.status(401);
+        throw new Error('Invalid password');
+    }
+});
+
+
+module.exports = { registerUser, authUser, changePassword };

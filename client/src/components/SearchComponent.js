@@ -49,7 +49,6 @@ const clearSelectedHeros = (hero) => {
   
   };
 
-  console.log(listName);
   // useEffect(() => {
   //   fetch('/info-db')
   //     .then((response) => response.json())

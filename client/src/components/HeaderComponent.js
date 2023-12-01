@@ -35,7 +35,7 @@ function HeaderComponent() {
                 </Link>
               </Nav.Link>
             <NavDropdown title="More" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">My Profile</NavDropdown.Item>
+              <NavDropdown.Item href="/my-profile">My Profile</NavDropdown.Item>
               <NavDropdown.Item
                onClick={()=>{
                 localStorage.removeItem('userInfo')

@@ -43,6 +43,27 @@ const LoginComponent = () => {
    }
 }
 
+const login = async (e) => {
+  e.preventDefault();
+
+  try {
+    const { data } = await axios.post('/api/users/login', { email, password });
+
+    if (!data.isVerified) {
+      setError('Please verify your account to login');
+      return;
+    }
+
+    // ...rest of login logic
+  } catch (error) {
+    setError(error.response.data.message);
+  }
+};
+
+// ...rest of component
+
+
+
     return (
         <MainScreenComponent title='Login'>
             <div className='login-container'>

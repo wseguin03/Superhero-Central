@@ -80,7 +80,36 @@ const MyListComponent = () => {
   };
 
 
-
+  const handleDeleteList = (listId) => {
+    const confirmed = window.confirm('Are you sure you want to delete this list?');
+    if (confirmed) {
+      // Assuming you have an API endpoint to delete the list and associated reviews
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      if (userInfo && userInfo.token) {
+        fetch(`/api/lists/${listId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${userInfo.token}`
+          },
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to delete list');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('List deleted successfully:', data);
+            // You may want to refresh the list data here
+          })
+          .catch(error => {
+            console.error('Error deleting list:', error);
+          });
+      } else {
+        console.error('User not authenticated');
+      }
+    }
+  };
 
 
   if (!loginState) {
@@ -194,9 +223,13 @@ const MyListComponent = () => {
                             <Button id="edit-btn" variant="primary" href={`/lists/${list._id}`}>
                               Edit
                             </Button>
-                            <Button id="delete-btn" variant="danger">
-                              Delete
-                            </Button>
+                            <Button
+                            id="delete-btn"
+                            variant="danger"
+                            onClick={() => handleDeleteList(list._id)}
+                         >
+                      Delete
+                    </Button>
                           </Card.Body>
                         </Card>
                       ) : null}

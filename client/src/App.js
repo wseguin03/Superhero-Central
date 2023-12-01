@@ -9,6 +9,7 @@ import MyListComponent from './components/MyListComponent';
 import PublicListComponent from './components/PublicListComponent';
 import EditListComponent from './components/EditListComponent';
 import ReviewComponent from './components/ReviewComponent';
+import MyProfileComponent from './components/MyProfileComponent';
 function App() {
   return (
     <BrowserRouter>
@@ -22,7 +23,7 @@ function App() {
         <Route path="/public-lists" element={<PublicListComponent/>} />
         <Route path = '/lists/:id' element = {<EditListComponent/>} />
         <Route path = 'lists/:id/review' element = {<ReviewComponent/>} />
-
+        <Route path = '/my-profile' element = {<MyProfileComponent/>} />
 
 
 
