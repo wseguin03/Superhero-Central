@@ -27,6 +27,7 @@
 .button-container {
     display: flex;
     gap: 20px;
+    padding:10px;
 }
 
 .login-button, .signup-button {
@@ -47,4 +48,10 @@
 .signup-button {
     background-color: #1494cb;
     color: white;
+}
+#welcome-text{
+    width:100%;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
 }

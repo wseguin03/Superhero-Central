@@ -8,6 +8,8 @@ import './LoginComponent.css';
 import axios from 'axios';
 import Loading from './Loading';
 import ErrorMessage from './ErrorMessage';
+import { useNavigate } from 'react-router-dom';
+
 const LoginComponent = () => {
 
     const [email, setEmail] = useState('');
@@ -16,49 +18,49 @@ const LoginComponent = () => {
     const [loading, setLoading] = useState(false);
     const [loginState, setLoginState] = useState(false);
     
-    
+const navigate = useNavigate();
 
-    const submitHandler = async (e) => {
-        e.preventDefault();
-
-        try{
-            const config = {
-                headers:{
-                    'Content-type':'application/json'
-                }
-            }
-            setLoading(true)
-            const {data} = await axios.post('/api/users/login',{email,password},config)
-            
-            console.log(data);
-            localStorage.setItem('userInfo', JSON.stringify(data));
-            
-            setLoading(false)
-            setError(false)
-            setLoginState(true);
-            // history.push('/mylist')
-        }catch(error){
-           setError(error.response.data.message)
-           setLoading(false)
-   }
-}
-
-const login = async (e) => {
+const submitHandler = async (e) => {
   e.preventDefault();
 
   try {
-    const { data } = await axios.post('/api/users/login', { email, password });
-
-    if (!data.isVerified) {
-      setError('Please verify your account to login');
-      return;
+    const config = {
+      headers: {
+        'Content-type': 'application/json'
+      }
     }
+    setLoading(true)
+    const { data } = await axios.post('/api/users/login', { email, password }, config)
 
-    // ...rest of login logic
+    console.log(data);
+    localStorage.setItem('userInfo', JSON.stringify(data));
+
+    setLoading(false)
+    setError(false)
+    setLoginState(true);
+    navigate('/') // Redirect to '/'
   } catch (error) {
-    setError(error.response.data.message);
+    setError(error.response.data.message)
+    setLoading(false)
   }
-};
+}
+
+// const login = async (e) => {
+//   e.preventDefault();
+
+//   try {
+//     const { data } = await axios.post('/api/users/login', { email, password });
+
+//     if (!data.isVerified) {
+//       setError('Please verify your account to login');
+//       return;
+//     }
+
+//     // ...rest of login logic
+//   } catch (error) {
+//     setError(error.response.data.message);
+//   }
+// };
 
 // ...rest of component
 
