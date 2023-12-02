@@ -29,8 +29,7 @@ const MyListComponent = () => {
       })
       .then((response) => response.json())
       .then((data) => {
-        setPrivateLists(data);
-        // console.log("Private Lists: "+JSON.stringify(privateLists))
+        setPrivateLists(data.sort((a, b) => new Date(b.lastChanged) - new Date(a.lastChanged)));        // console.log("Private Lists: "+JSON.stringify(privateLists))
       })
       .catch((error) => {
         console.error('Error fetching data: ', error);
@@ -47,14 +46,9 @@ const MyListComponent = () => {
           .then((response) => response.json())
       ))
       .then(dataArray => {
-        // Sort each results array by lastChanged date in descending order
-        const sortedDataArray = dataArray.map(data => {
-          if (data.results) {
-            data.results.sort((a, b) => new Date(b.lastChanged) - new Date(a.lastChanged));
-          }
-          return data;
-        });
-  
+        // Sort the lists by lastChanged date in descending order
+        const sortedDataArray = dataArray.sort((a, b) => new Date(b.lastChanged) - new Date(a.lastChanged));
+
         setListInfo(sortedDataArray);
         setLoading(false); // Set loading to false here, after listInfo is set
       })
@@ -63,8 +57,7 @@ const MyListComponent = () => {
       });
     }
   }, [privateLists]);
-
-
+  
   const handleToggleListClick = (list) => {
     setSelectedList((prevSelectedList) =>
       prevSelectedList === list ? null : list
@@ -163,13 +156,7 @@ const MyListComponent = () => {
                             <br />
                           </Card.Text>
                         </Col>
-                        <Col className="list-body-column">
-                          <Card.Text>
-                            <strong>Average rating:</strong> {list.rating}
-                            <br />
-                          </Card.Text>
-                        </Col>
-
+              
                         <Col className="list-body-column">
                           <Card.Text>
                             <strong>Public: </strong> {list.public ? 'Yes' : 'No'}

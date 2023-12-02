@@ -8,27 +8,33 @@ const getList = asyncHandler(
         res.json(new_list)
     }
 )
-
 const createList = asyncHandler(
-    async(req,res) => {
-        const {name,description,list, public} = req.body;
-        console.log(req.body)
-        if(!name || !list){
-            res.status(400)
-            throw new Error('Please fill all the fields')
-        }
-        else{
-        const new_list = new List({
-            name,
-            description,
-            list,
-            user: req.user.username,
-            public
-        })
-        const createdList = await new_list.save()
-        res.status(201).json(createdList)
+  async(req,res) => {
+    const {name,description,list, public} = req.body;
+    console.log(req.body)
+    if(!name || !list){
+      res.status(400)
+      throw new Error('Please fill all the fields')
     }
+    else{
+      const existingList = await List.findOne({ name: name, user: req.user.username });
+
+      if (existingList) {
+        res.status(400)
+        throw new Error('You have already created a list with this name')
+      }
+
+      const new_list = new List({
+        name,
+        description,
+        list,
+        user: req.user.username,
+        public
+      })
+      const createdList = await new_list.save()
+      res.status(201).json(createdList)
     }
+  }
 )
 const getListById = asyncHandler(
     async(req,res) => {

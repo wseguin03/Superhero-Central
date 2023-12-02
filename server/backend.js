@@ -198,6 +198,7 @@ app.delete('/delete-list/:name', (req, res) => {
     List.findOne({ "name": sanitizedListName })
       .then((result) => {
         if (result) {
+          result.name = req.body.name; // Update the name data
           result.list = req.body.list; // Update the list data
           result.user = req.body.user; // Update the user data
           result.description = req.body.description; // Update the description data
@@ -289,8 +290,10 @@ app.get('/list-db/:name', (req, res) => {
           description: result.description, // Add description property
           public: result.public, // Add public property
           rating: result.rating, // Add rating property
-          lastChanged: result.lastChanged // Add lastChanged property
+          lastChanged: result.lastChanged, // Add lastChanged property
+          name: result.name, // Add name property
         });
+        console.log(result)
       })
       .catch((error) => {
         console.error(error);

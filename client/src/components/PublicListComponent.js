@@ -18,10 +18,12 @@ const PublicListComponent = () => {
   const [listReviews, setListReviews] = useState([]);
 
 useEffect(() => {
-  fetchListReviews();
+  const sortedLists = [...lists].sort((a, b) => new Date(b.lastChanged) - new Date(a.lastChanged));
+  fetchListReviews(sortedLists);
 }, [lists]);
-const fetchListReviews = async () => {
-  const reviewsAndRatingsForAllLists = await Promise.all(lists.map(fetchReviewsForList));
+
+const fetchListReviews = async (sortedLists) => {
+  const reviewsAndRatingsForAllLists = await Promise.all(sortedLists.map(fetchReviewsForList));
   setListReviews(reviewsAndRatingsForAllLists);
 };
 
@@ -52,9 +54,11 @@ const fetchReviewsForList = async (list) => {
     fetch('/create-list')
       .then((response) => response.json())
       .then((data) => {
-        const publicLists = data.filter(list => list.public === true);
+        const publicLists = data
+          .filter(list => list.public === true)
+          .sort((a, b) => new Date(b.lastChanged) - new Date(a.lastChanged));
         setLists(publicLists);
-        console.log("Public Lists: "+JSON.stringify(publicLists))
+        // console.log("Public Lists: "+JSON.stringify(publicLists))
       })
       .catch((error) => {
         console.error('Error fetching data: ', error);
@@ -69,17 +73,11 @@ const fetchReviewsForList = async (list) => {
           .then((response) => response.json())
       ))
       .then(dataArray => {
-        // Sort each results array by lastChanged date in descending order
-        const sortedDataArray = dataArray.map(data => {
-          if (data.results) {
-            data.results.sort((a, b) => new Date(a.lastChanged) - new Date(b.lastChanged));
+        // Sort the lists by lastChanged date in descending order
+        const sortedDataArray = dataArray.sort((a, b) => new Date(b.lastChanged) - new Date(a.lastChanged));
 
-          }
-
-          return data;
-        });
-  
-        setListInfo(sortedDataArray);        
+        setListInfo(sortedDataArray);
+        console.log("List Info: "+JSON.stringify(listInfo))
         setLoading(false); // Set loading to false here, after listInfo is set
       })
       .catch((error) => {
@@ -114,7 +112,7 @@ return (
           {lists.map((list, index) => (
             <li key={index} className="superhero-item">
               <Card>
-                <Card.Header>{list.name}</Card.Header>
+                <Card.Header>{lists[index].name}</Card.Header>                
                 <Card.Body>
                   <Row className='list-body'>
                     <Col className='list-body-column'>
@@ -147,8 +145,7 @@ return (
                     <Card>
                         <Card.Text id="desc-tag">
                           <h5>
-                            <strong>Description:</strong> {list.description}{' '}
-                            <br />
+                          <strong>Description:</strong> {listInfo[index].description}{' '}                            <br />
                           </h5>
                          
                         </Card.Text>

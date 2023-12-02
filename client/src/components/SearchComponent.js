@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Form, Container, Row, Card, ToggleButton, ToggleButtonGroup, Dropdown} from 'react-bootstrap';
+import { Button, Form, Container, Row, Card, Dropdown} from 'react-bootstrap';
 import Fuse from 'fuse.js';
 import './SearchComponent.css';
 import MainScreenComponent from './MainScreenComponent';
@@ -21,8 +21,11 @@ const SearchComponent = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-
+const [personalLists, setPersonalLists] = useState([]);
     const [selectedHero, setSelectedHero] = useState();
+    const [selectedList, setSelectedList] = useState(null);
+    const [selectedListName, setSelectedListName] = useState('');
+
     // const [selectedHeroCard, setselectedHeroCard] = useState(null);
 const handleAddToList = () => {
   if (selectedHero) {
@@ -49,18 +52,25 @@ const clearSelectedHeros = (hero) => {
   
   };
 
-  // useEffect(() => {
-  //   fetch('/info-db')
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       // console.log(data)
-  //       setBackendData(data);
-  //       // console.log("Backend Data: "+ backendData)
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching data: ', error);
-  //     });
-  // }, []);
+  useEffect(() => {
+    const fetchPersonalLists = async () => {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const authToken = userInfo ? userInfo.token : '';
+
+      try {
+        const response = await axios.get('/api/lists', {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        setPersonalLists(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchPersonalLists();
+  }, []);
 
   useEffect(() => {
     fetch('/info-db')
@@ -132,36 +142,50 @@ useEffect(() => {
   const submitHandler = async (e) => {
     e.preventDefault();
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if(userInfo && userInfo.token){
-    try{
-      console.log("List Name: ", listName);
+    if (userInfo && userInfo.token) {
+      try {
         const config = {
-            headers:{
-                'Content-type':'application/json',
-                'Authorization': `Bearer ${userInfo.token}`
-
-            }
+          headers: {
+            'Content-type': 'application/json',
+            'Authorization': `Bearer ${userInfo.token}`
+          }
+        };
+        setLoading(true);
+  
+        if (selectedList) {
+          // If a list is selected, add heroes to the existing list
+          const { data } = await axios.put(`/api/lists/${selectedList}`, {
+            name: listName || selectedListName,
+            list: selectedListHeros,
+            lastChanged: Date.now().toString().slice(0, 16)
+          }, config);
+          console.log(data);
+        } else {
+          // If no list is selected, create a new list
+          const { data } = await axios.post('/api/lists/create', {
+            name: listName,
+            description: listDescription,
+            list: selectedListHeros,
+            public: isPublic,
+            lastChanged: Date.now().toString().slice(0, 16)
+          }, config);
+          console.log(data);
+  
+          // Clear name and description fields after successful creation
+          // setListName('');
+          // setListDescription('');
         }
-        setLoading(true)
-        const {data} = await axios.post('/api/lists/create',{
-          name: listName,
-          description: listDescription, 
-          list: selectedListHeros,
-          public: isPublic,
-          lastChanged: Date.now().toString().slice(0, 16)                
-        },config)
-        
-        console.log(data);
-        
-        setLoading(false)
-        setError(false)
-      
-        // history.push('/mylist')
-    }catch(error){
-       setError(error.response.data.message)
-       setLoading(false)
-}}
-}
+  
+        setLoading(false);
+        setError(false);
+      } catch (error) {
+        setError(error.response.data.message);
+        setLoading(false);
+      }
+    }
+  };
+  
+ 
 
 
   return (
@@ -175,13 +199,13 @@ useEffect(() => {
                     <Form.Group controlId="list-name">
                       <Form.Label>List Name</Form.Label>
                       <Form.Control type="list-name" placeholder="Enter a list name"
-                       onChange={(e) => setListName(e.target.value)}/>
+                       onChange={(e) => setListName(e.target.value)} value={listName}/>
                     </Form.Group>
                    
                     <Form.Group controlId="list-description">
                       <Form.Label>Add a Description</Form.Label>
                       <Form.Control type="list-description" placeholder="Enter a list description"
-                      onChange={(e) => setListDescription(e.target.value)}/>
+                      onChange={(e) => setListDescription(e.target.value)} value={listDescription}/>
                       
                     </Form.Group>
 
@@ -192,7 +216,32 @@ useEffect(() => {
                       Clear List
                     </Button>
 
-                    <Dropdown>Test</Dropdown>
+                    <Form.Group controlId="personal-lists">
+                     
+                    
+                    <Dropdown onSelect={(eventKey, event) => {
+                        setSelectedList(eventKey);
+                        const selectedListObject = personalLists.find(list => list._id === eventKey);
+                        setSelectedListName(selectedListObject ? selectedListObject.name : '');
+                        setListName(selectedListObject ? selectedListObject.name : '');
+                        setListDescription(selectedListObject ? selectedListObject.description : '');
+
+                        console.log("Selected List name: ", event.target.innerText);
+                        console.log("Selected List description: ", selectedListObject ? selectedListObject.description : '');
+                      }}>
+                        <Dropdown.Toggle variant="success" id="dropdown-basic">
+                          {selectedListName || 'Personal Lists'}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          {personalLists.map((list, index) => (
+                            <Dropdown.Item key={index} eventKey={list._id}>
+                              {list.name}
+                            </Dropdown.Item>
+                          ))}
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </Form.Group>
                   </Form>
           </Container>
 </Row>
