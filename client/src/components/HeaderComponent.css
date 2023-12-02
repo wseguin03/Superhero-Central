@@ -13,3 +13,12 @@
     display: flex;
     justify-content: space-between;
   }
+
+  
+  #admin-label{
+    font-weight: bold;
+  }
+  #admin-label:hover{
+    cursor: default;
+  }
+  

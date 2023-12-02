@@ -11,7 +11,7 @@ import ErrorMessage from './ErrorMessage';
 import { useNavigate } from 'react-router-dom';
 
 const LoginComponent = () => {
-
+    const [userFlagged, setUserFlagged] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);

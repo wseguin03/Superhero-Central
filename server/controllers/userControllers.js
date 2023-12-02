@@ -42,13 +42,16 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 });
 
-
 const authUser = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
-    // console.log(req.body);
     const user = await User.findOne({email});
-    console.log(user);
-    if((user) && (await user.matchPasswords(password))){
+
+    if (user && user.isFlagged) {
+        res.status(403);
+        throw new Error('Your account has been deactivated. Please contact an administrator.');
+    }
+
+    if (user && await user.matchPasswords(password)) {
         res.json({
             _id: user._id,
             username: user.username,
@@ -56,7 +59,7 @@ const authUser = asyncHandler(async (req, res) => {
             isAdmin: user.isAdmin,
             token: generateToken(user._id)
         });
-    }else{
+    } else {
         res.status(400);
         throw new Error('Invalid email or password');
     }
@@ -89,6 +92,25 @@ const changePassword = asyncHandler(async (req, res) => {
         throw new Error('Invalid password');
     }
 });
+const getUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({});
+    res.json(users);
+});
 
+const updateUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
 
-module.exports = { registerUser, authUser, changePassword };
+    if (user) {
+        user.isFlagged = req.body.isFlagged;
+        if (req.body.isAdmin !== undefined) {
+            user.isAdmin = req.body.isAdmin;
+        }
+        const updatedUser = await user.save();
+        res.json(updatedUser);
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
+module.exports = { registerUser, authUser, changePassword, getUsers, updateUser };

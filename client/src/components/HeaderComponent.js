@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './HeaderComponent.css';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -8,6 +8,20 @@ import { useHistory } from 'react-router-dom';
 import {Link} from 'react-router-dom'
 function HeaderComponent() {
     // const history = useHistory();
+
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      if(userInfo){
+        setIsAdmin(userInfo.isAdmin)
+        console.log(JSON.stringify(userInfo))
+      }
+    }, []);
+
+    useEffect(() => {
+      console.log(isAdmin);
+    }, [isAdmin]);
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
@@ -48,6 +62,19 @@ function HeaderComponent() {
               </NavDropdown.Item>
             
             </NavDropdown>
+            {isAdmin ? (
+               <>
+                 <Nav.Link href = '/admin'>
+                 <Link to = '/admin'>
+                   Admin Terminal
+                   </Link>
+                 </Nav.Link>
+                 <Nav.Link id='admin-label'>
+                   Server Access Granted 
+                 </Nav.Link>
+               </>
+            ):null}
+           
           </Nav>
         </Navbar.Collapse>
       </Container>

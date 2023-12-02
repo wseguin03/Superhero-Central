@@ -10,6 +10,7 @@ import PublicListComponent from './components/PublicListComponent';
 import EditListComponent from './components/EditListComponent';
 import ReviewComponent from './components/ReviewComponent';
 import MyProfileComponent from './components/MyProfileComponent';
+import AdminComponent from './components/AdminComponent';
 function App() {
   return (
     <BrowserRouter>
@@ -24,6 +25,8 @@ function App() {
         <Route path = '/lists/:id' element = {<EditListComponent/>} />
         <Route path = 'lists/:id/review' element = {<ReviewComponent/>} />
         <Route path = '/my-profile' element = {<MyProfileComponent/>} />
+        <Route path = '/admin' element = {<AdminComponent/>} />
+
 
 
 
