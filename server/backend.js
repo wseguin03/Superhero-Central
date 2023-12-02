@@ -11,6 +11,7 @@ const List = require('./models/lists');
 const userRoutes = require('./routes/userRoutes');
 const listRoutes = require('./routes/listRoutes');
 const reviewRoutes = require('./routes/reviewRoute');
+const flag = require('./routes/flagReviewRoute');
 
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
@@ -454,7 +455,7 @@ app.get('/info-db-name/:name', (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/lists', listRoutes);
 app.use('/api/lists/:id/reviews', reviewRoutes);
-
+app.use('/api/reviews', flag)
 
 app.use(notFound);
 app.use(errorHandler);

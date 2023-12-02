@@ -23,7 +23,6 @@ const fetchListReviews = async () => {
   const reviewsForAllLists = await Promise.all(lists.map(fetchReviewsForList));
   setListReviews(reviewsForAllLists);
 };
-
 const fetchReviewsForList = async (list) => {
   const response = await fetch(`/api/lists/${list._id}/reviews`, {
     headers: {
@@ -31,7 +30,8 @@ const fetchReviewsForList = async (list) => {
     }
   });
   const data = await response.json();
-  return data;
+  const unflaggedReviews = data.filter(review => !review.flagged);
+  return unflaggedReviews;
 };
 
   useEffect(() => {

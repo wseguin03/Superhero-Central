@@ -22,15 +22,14 @@ const AdminComponent = () => {
     useEffect(() => {
         if(username === 'admin') {
             setIsMainAdmin(true);
-            setIsAdmin(true);
             console.log('Admin is logged in')
         }
-        else if(userInfo.isAdmin){            
+        if(userInfo.isAdmin){            
             setIsAdmin(true);
         }
       
         }
-    , [username]);
+    , [isAdmin, isMainAdmin]);
     useEffect(() => {
         const fetchData = async () => {
             const config = {
@@ -44,14 +43,8 @@ const AdminComponent = () => {
             const filteredData = data.filter(user => user.username !== 'admin');
             setUsers(filteredData);
 
-            const { data: listsData } = await axios.get('/api/lists', config);
-            let allReviews = [];
-            for (let list of listsData) {
-                const { data: reviewsData } = await axios.get(`/api/lists/${list._id}/reviews`, config);
-                allReviews = allReviews.concat(reviewsData);
-            }
-            setReviews(allReviews);
-            console.log(allReviews);
+            const { data: listsData } = await axios.get('/api/reviews/all', config);
+            setReviews(listsData);
         }
 
         fetchData();
@@ -81,19 +74,22 @@ const handleAdminToggle = async (id) => {
     const { data } = await axios.put(`/api/users/${id}`, { isAdmin: !user.isAdmin }, config);
     setUsers(users.map(user => user._id === id ? data : user));
   }
-
-
-  const toggleFlag = async () => {
+const toggleFlag = async (reviewId) => {
     const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : null}`
-      },
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : null}`
+        },
     }
-  
-    const { data } = await axios.put(`/api/reviews/${review._id}`, { flagged: !isFlagged }, config);
-    setIsFlagged(!isFlagged);
-  }
+
+    const { data } = await axios.put(`/api/reviews/${reviewId}`, {}, config);
+    
+    // Update the reviews state
+    setReviews(reviews.map((review) => review._id === reviewId ? {...review, flagged: !review.flagged} : review));
+}
+
+// ...
+
     if(isAdmin){
     return (
             <MainScreenComponent title= 'Admin Terminal'>
@@ -140,8 +136,7 @@ const handleAdminToggle = async (id) => {
                             <Card.Text>
                                 {review.rating}/5
                             </Card.Text>
-                            <Button variant='danger' onClick={toggleFlag}>{isFlagged ? 'Unflag Review' : 'Flag Review'}</Button>
-                            </Card.Body>
+                            <Button variant='danger' onClick={() => toggleFlag(review._id)}>{review.flagged ? 'Unflag Review' : 'Flag Review'}</Button>                            </Card.Body>
                         </Card>
                         </Col>
                     ))}
