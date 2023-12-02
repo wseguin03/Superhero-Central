@@ -3,6 +3,7 @@ import MainScreenComponent from './MainScreenComponent'
 import './PublicListComponent.css'
 import { Container, Row,Card, Col, Button } from 'react-bootstrap';
 import ErrorMessage from './ErrorMessage';
+import { set } from 'mongoose';
 
 const PublicListComponent = () => {
   const [lists, setLists] = useState([]);
@@ -11,6 +12,7 @@ const PublicListComponent = () => {
   const [listInfo, setListInfo] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedHero, setSelectedHero] = useState(null);
+  const [rating, setRating] = useState([]);
 
   const token = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : null;
   const [listReviews, setListReviews] = useState([]);
@@ -18,11 +20,11 @@ const PublicListComponent = () => {
 useEffect(() => {
   fetchListReviews();
 }, [lists]);
-
 const fetchListReviews = async () => {
-  const reviewsForAllLists = await Promise.all(lists.map(fetchReviewsForList));
-  setListReviews(reviewsForAllLists);
+  const reviewsAndRatingsForAllLists = await Promise.all(lists.map(fetchReviewsForList));
+  setListReviews(reviewsAndRatingsForAllLists);
 };
+
 const fetchReviewsForList = async (list) => {
   const response = await fetch(`/api/lists/${list._id}/reviews`, {
     headers: {
@@ -31,8 +33,12 @@ const fetchReviewsForList = async (list) => {
   });
   const data = await response.json();
   const unflaggedReviews = data.filter(review => !review.flagged);
-  return unflaggedReviews;
+  const averageRating = unflaggedReviews.reduce((total, review) => total + review.rating, 0) / unflaggedReviews.length;
+  console.log("Average Rating: "+averageRating);
+
+  return { reviews: unflaggedReviews, averageRating };
 };
+
 
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
@@ -66,12 +72,14 @@ const fetchReviewsForList = async (list) => {
         // Sort each results array by lastChanged date in descending order
         const sortedDataArray = dataArray.map(data => {
           if (data.results) {
-            data.results.sort((a, b) => new Date(b.lastChanged) - new Date(a.lastChanged));
+            data.results.sort((a, b) => new Date(a.lastChanged) - new Date(b.lastChanged));
+
           }
+
           return data;
         });
   
-        setListInfo(sortedDataArray);
+        setListInfo(sortedDataArray);        
         setLoading(false); // Set loading to false here, after listInfo is set
       })
       .catch((error) => {
@@ -132,8 +140,7 @@ return (
                     </Col>
                     <Col className='list-body-column'>
                       <Card.Text>
-                        <strong>Average rating:</strong> {list.rating}<br />
-                      </Card.Text>
+                      <strong>Average rating:</strong> {listReviews[index] && listReviews[index].averageRating.toFixed(1)}<br />                      </Card.Text>
                     </Col>
                   </Row>
                   {selectedList === list && listInfo[index] && listInfo[index].results ? (
@@ -181,16 +188,16 @@ return (
                         ))}
                       </Card.Body>
                       <Card className='review-card'>
-                <h4>Reviews:</h4>
-                {listReviews[index] && listReviews[index].map((review, reviewIndex) => (
-                  <div key={reviewIndex} className='review-item'>
-                    <p><strong>Left By:</strong> {review.user}</p>
-                    <p><strong>Rating:</strong> {review.rating}/5</p>
-                    <p><strong>Comment:</strong> {review.comment}</p>
-                    <p><strong>Time:</strong> {new Date(review.ratingTime).toISOString().slice(0, 16)}</p>
-                  </div>
-                ))}
-              </Card>
+                          <h4>Reviews:</h4>
+                          {listReviews[index] && listReviews[index].reviews.map((review, reviewIndex) => (
+                            <div key={reviewIndex} className='review-item'>
+                              <p><strong>Left By:</strong> {review.user}</p>
+                              <p><strong>Rating:</strong> {review.rating}/5</p>
+                              <p><strong>Comment:</strong> {review.comment}</p>
+                              <p><strong>Time:</strong> {new Date(review.ratingTime).toISOString().slice(0, 16)}</p>
+                            </div>
+                          ))}
+                        </Card>
                     </Card>
                     
                   ) : null}

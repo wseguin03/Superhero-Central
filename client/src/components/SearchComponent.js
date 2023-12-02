@@ -148,6 +148,7 @@ useEffect(() => {
           description: listDescription, 
           list: selectedListHeros,
           public: isPublic,
+          lastChanged: Date.now().toString().slice(0, 16)                
         },config)
         
         console.log(data);

@@ -8,11 +8,11 @@ const listSchema = new Schema({
     "user": String,
     "public": {type: Boolean, default: false},
     "description": String,
-    'rating': Array,
+    'averageRating': Number,
     'lastChanged': { 
-        type: Date, 
+        type: Date,
         default: () => {
-            const now = new Date();
+            let now = new Date();
             const offset = now.getTimezoneOffset() * 60000;
             return new Date(now.getTime() - offset);
         }
@@ -21,6 +21,13 @@ const listSchema = new Schema({
     
 });
 
+
+listSchema.pre('save', function (next) {
+    let now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    this.lastChanged = new Date(now.getTime() - offset);
+    next();
+});
 
 const hero_list = mongoose.model('hero_list', listSchema);
 module.exports = (hero_list)
