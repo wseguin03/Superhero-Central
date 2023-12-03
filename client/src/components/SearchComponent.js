@@ -133,7 +133,7 @@ useEffect(() => {
           : intersectionResults.filter((hero) => results.some((result) => result.item.id === hero.id));
       }
     });
-    setSearchResults(intersectionResults.length > 0 ? intersectionResults : backendData.slice(0, 10));
+    setSearchResults(intersectionResults.length > 0 ? intersectionResults : backendData);
     console.log("Search Results: ", intersectionResults);
   };
  

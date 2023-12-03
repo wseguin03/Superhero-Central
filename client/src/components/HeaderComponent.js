@@ -27,7 +27,7 @@ function HeaderComponent() {
       <Container>
         <Navbar.Brand href="/">
         <Link to = '/'>
-        Superhero App
+        Superhero-Select
                 </Link>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

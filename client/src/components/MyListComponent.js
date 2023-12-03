@@ -9,6 +9,9 @@ const MyListComponent = () => {
   const [loginState, setLoginState] = useState(false);
   const [privateLists, setPrivateLists] = useState([]);
   const [selectedHero, setSelectedHero] = useState(null);
+  const [listData, setListData] = useState([]);
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
   const handlePrivacyChange = (privacy) => {
   // handle the privacy setting change
   console.log('Selected privacy: ', privacy);
@@ -20,7 +23,6 @@ const MyListComponent = () => {
     }
   }, []); // Empty dependency array means this effect runs once on mount
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if(userInfo && userInfo.token){
       fetch('/api/lists', {
         headers: {
@@ -73,6 +75,8 @@ const MyListComponent = () => {
   };
 
 
+
+
   const handleDeleteList = (listId) => {
     const confirmed = window.confirm('Are you sure you want to delete this list?');
     if (confirmed) {
@@ -93,8 +97,7 @@ const MyListComponent = () => {
           })
           .then(data => {
             console.log('List deleted successfully:', data);
-            // You may want to refresh the list data here
-          })
+            window.location.reload();         })
           .catch(error => {
             console.error('Error deleting list:', error);
           });

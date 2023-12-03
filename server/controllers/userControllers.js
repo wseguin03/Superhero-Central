@@ -41,9 +41,19 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new Error('Invalid user data');
     }
 });
-
 const authUser = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
+
+    if (!email) {
+        res.status(400);
+        throw new Error('Email must be provided');
+    }
+
+    if (!password) {
+        res.status(400);
+        throw new Error('Password must be provided');
+    }
+
     const user = await User.findOne({email});
 
     if (user && user.isFlagged) {

@@ -145,9 +145,9 @@ const handleUpdateToolsDescription = async () => {
   useEffect(() => {
     const fetchPolicies = async () => {
       try {
-        const response1 = await fetch('/api/admin/toolsDescription');
-        const data1 = await response1.json();
-        setEditToolsDescription(data1.policyDescription);
+        // const response1 = await fetch('/api/admin/toolsDescription');
+        // const data1 = await response1.json();
+        // setEditToolsDescription(data1.policyDescription);
 
         const response2 = await fetch('/api/admin/dmcaTakedownProcedure');
         const data2 = await response2.json();

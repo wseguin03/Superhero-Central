@@ -45,27 +45,6 @@ const submitHandler = async (e) => {
   }
 }
 
-// const login = async (e) => {
-//   e.preventDefault();
-
-//   try {
-//     const { data } = await axios.post('/api/users/login', { email, password });
-
-//     if (!data.isVerified) {
-//       setError('Please verify your account to login');
-//       return;
-//     }
-
-//     // ...rest of login logic
-//   } catch (error) {
-//     setError(error.response.data.message);
-//   }
-// };
-
-// ...rest of component
-
-
-
     return (
         <MainScreenComponent title='Login'>
             <div className='login-container'>
@@ -84,9 +63,7 @@ const submitHandler = async (e) => {
         <Form.Label>Password</Form.Label>
         <Form.Control type="password" placeholder="Password" onChange={(e)=>setPassword(e.target.value)}/>
       </Form.Group>
-      {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" />
-      </Form.Group> */}
+    
         <Button variant="primary" type="submit">
           Sign in
         </Button>
