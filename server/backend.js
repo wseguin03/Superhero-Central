@@ -13,6 +13,7 @@ const listRoutes = require('./routes/listRoutes');
 const reviewRoutes = require('./routes/reviewRoute');
 const flag = require('./routes/flagReviewRoute');
 const policyRoutes = require('./routes/policyRoute');
+const disputeRoute = require('./routes/disputeRoute');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 require('dotenv').config();
@@ -44,6 +45,7 @@ mongoose.connect(db_uri, { useNewUrlParser: true, useUnifiedTopology: true })
 // router.use(express.json());
 app.use(express.json())
 const path = require('path');
+const dispute = require('./models/dispute');
 
 app.use('/', express.static(path.join(__dirname, '..', 'client')));
 
@@ -460,6 +462,7 @@ app.use('/api/lists', listRoutes);
 app.use('/api/lists/:id/reviews', reviewRoutes);
 app.use('/api/reviews', flag)
 app.use('/api/admin', policyRoutes);
+app.use('/api/dispute', disputeRoute);
 
 app.use(notFound);
 app.use(errorHandler);

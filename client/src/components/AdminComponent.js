@@ -18,6 +18,8 @@ const AdminComponent = () => {
     const [dmcaTakedownProcedure, setDmcaTakedownProcedure] = useState('');
     const [editToolsDescription, setEditToolsDescription] = useState('');
     const [editDmcaTakedownProcedure, setEditDmcaTakedownProcedure] = useState('');
+
+    
     
     useEffect(() => {});
 
@@ -158,6 +160,27 @@ const handleUpdateToolsDescription = async () => {
     fetchPolicies();
   }, []);
 
+const recordTakedown = async (id) => {
+  try {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : null}`
+      },
+    }
+
+    const response = await axios.post(`/api/dispute/${id}`, {}, config);
+    const data = await response.data;
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Could not record takedown.');
+    }
+
+    // Update the reviews in the state to mark the review as taken down
+  } catch (error) {
+    console.error('Failed to record takedown:', error);
+  }
+};
     if(isAdmin){
     return (
             <MainScreenComponent title= 'Admin Terminal'>
@@ -198,13 +221,15 @@ const handleUpdateToolsDescription = async () => {
                             
 
                         <Card>
-                            <Card.Header as="h5">{review.user}</Card.Header>
-                            <Card.Body>
+                          <Card.Header as="h5">{review.user}</Card.Header>
+                          <Card.Body>
                             <Card.Title>{review.comment}</Card.Title>
                             <Card.Text>
-                                {review.rating}/5
+                              {review.rating}/5
                             </Card.Text>
-                            <Button variant='danger' onClick={() => toggleFlag(review._id)}>{review.flagged ? 'Unflag Review' : 'Flag Review'}</Button>                            </Card.Body>
+                            <Button variant='danger' onClick={() => toggleFlag(review._id)}>{review.flagged ? 'Unflag Review' : 'Flag Review'}</Button>
+                            <Button variant='warning' href = {`/dispute/${review._id}`} onClick={() => recordTakedown(review._id)}>Record Takedown</Button>
+                          </Card.Body>
                         </Card>
                         </Col>
                     ))}
