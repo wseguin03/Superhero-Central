@@ -241,7 +241,7 @@ const recordTakedown = async (id) => {
           </div>
           <Col md={6}>
             <Form>
-              <Form.Group controlId="toolsDescription">
+              {/* <Form.Group controlId="toolsDescription">
                 <Form.Label>Tools Description</Form.Label>
                 <Form.Control
                   as="textarea"
@@ -252,10 +252,10 @@ const recordTakedown = async (id) => {
                 <Button variant="primary" onClick={handleUpdateToolsDescription}>
                   Update Tools Description
                 </Button>
-              </Form.Group>
+              </Form.Group> */}
             </Form>
           </Col>
-          <Col md={6}>
+          <Col md={12}>
             <Form>
               <Form.Group controlId="dmcaTakedownProcedure">
                 <Form.Label>DMCA Takedown Procedure</Form.Label>

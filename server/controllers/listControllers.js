@@ -9,33 +9,28 @@ const getList = asyncHandler(
     }
 )
 const createList = asyncHandler(
-  async(req,res) => {
-    const {name,description,list, public} = req.body;
-    console.log(req.body)
-    if(!name || !list){
-      res.status(400)
-      throw new Error('Please fill all the fields')
-    }
-    else{
-      const existingList = await List.findOne({ name: name, user: req.user.username });
+    async (req, res) => {
+        const { name, description, list, public } = req.body;
 
-      if (existingList) {
-        res.status(400)
-        throw new Error('You have already created a list with this name')
-      }
+        const userListsCount = await List.countDocuments({ user: req.user.username });
 
-      const new_list = new List({
-        name,
-        description,
-        list,
-        user: req.user.username,
-        public
-      })
-      const createdList = await new_list.save()
-      res.status(201).json(createdList)
+        if (userListsCount >= 20) {
+            res.status(400);
+            throw new Error('You have reached the maximum limit of 20 lists');
+        } else {
+            const new_list = new List({
+                name,
+                description,
+                list,
+                user: req.user.username,
+                public
+            });
+
+            const createdList = await new_list.save();
+            res.status(201).json(createdList);
+        }
     }
-  }
-)
+);
 const getListById = asyncHandler(
     async(req,res) => {
         const list = await List.findById(req.params.id)

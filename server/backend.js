@@ -295,7 +295,7 @@ app.get('/list-db/:name', (req, res) => {
           lastChanged: result.lastChanged, // Add lastChanged property
           name: result.name, // Add name property
         });
-        console.log(result)
+        // console.log(result)
       })
       .catch((error) => {
         console.error(error);

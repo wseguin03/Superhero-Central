@@ -109,7 +109,7 @@ return (
     <Row>
       <Container>
         <ul className="public-lists">
-          {lists.map((list, index) => (
+          {lists.slice(0, 10).map((list, index) => (
             <li key={index} className="superhero-item">
               <Card>
                 <Card.Header>{lists[index].name}</Card.Header>                
@@ -157,13 +157,14 @@ return (
                         {listInfo[index].results.map((hero, heroIndex) => (
                           <div key={heroIndex}>
                             <h4><strong>Hero Name:</strong> {hero.info.name} <br /></h4>
-                            <strong>Publisher:</strong> {hero.info.Publisher} <br />
-                            <strong>Powers:</strong> {Object.entries(hero.power).map(([key, value], i) => (
-                                  value ? <span key={i}>{key}, </span> : null
-                                ))}
+                            <strong>Publisher:</strong> {hero.info.Publisher}
+                           
                             {selectedHero === hero ? (
                             
                             <div>
+                               <strong>Powers:</strong> {Object.entries(hero.power).map(([key, value], i) => (
+                                  value ? <span key={i}>{key}, </span> : null
+                                ))} <br />
                               <strong>Race:</strong> {hero.info.Race} <br />
                               <strong>Gender:</strong> {hero.info.Gender} <br />
                               <strong>Eye color:</strong> {hero.info["Eye color"]} <br />
