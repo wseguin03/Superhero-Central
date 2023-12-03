@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Button, Card, Container, Row, Col} from 'react-bootstrap';
+import { Button, Card, Container, Row, Col, Form} from 'react-bootstrap';
 import './AdminComponent.css'
 import MainScreenComponent from './MainScreenComponent';
 import { set } from 'mongoose';
@@ -14,8 +14,11 @@ const AdminComponent = () => {
     const username = userInfo ? userInfo.username : null;
     const [reviews, setReviews] = useState([]);
 
-
-
+    const [toolsDescription, setToolsDescription] = useState('');
+    const [dmcaTakedownProcedure, setDmcaTakedownProcedure] = useState('');
+    const [editToolsDescription, setEditToolsDescription] = useState('');
+    const [editDmcaTakedownProcedure, setEditDmcaTakedownProcedure] = useState('');
+    
     useEffect(() => {});
 
 
@@ -90,6 +93,71 @@ const toggleFlag = async (reviewId) => {
 
 // ...
 
+
+const handleUpdateToolsDescription = async () => {
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : null}`,
+        },
+      };
+
+      const updatedToolsPolicy = {
+        policyDescription: editToolsDescription,
+      };
+
+      const response = await axios.put('/api/admin/toolsDescription', updatedToolsPolicy, config);
+
+      // Update the state with the new tools description
+      setToolsDescription(response.data.policyDescription);
+    } catch (error) {
+      console.error('Error updating tools description:', error);
+      // Handle errors as needed
+    }
+  };
+
+  const handleUpdateDmcaTakedownProcedure = async () => {
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : null}`,
+        },
+      };
+
+      const updatedDmcaPolicy = {
+        policyDescription: editDmcaTakedownProcedure,
+      };
+
+      const response = await axios.put('/api/admin/dmcaTakedownProcedure', updatedDmcaPolicy, config);
+
+
+      // Update the state with the new DMCA takedown procedure
+      setDmcaTakedownProcedure(response.data.policyDescription);
+    } catch (error) {
+      console.error('Error updating DMCA takedown procedure:', error);
+      // Handle errors as needed
+    }
+  };
+  useEffect(() => {
+    const fetchPolicies = async () => {
+      try {
+        const response1 = await fetch('/api/admin/toolsDescription');
+        const data1 = await response1.json();
+        setEditToolsDescription(data1.policyDescription);
+
+        const response2 = await fetch('/api/admin/dmcaTakedownProcedure');
+        const data2 = await response2.json();
+        setEditDmcaTakedownProcedure(data2.policyDescription);
+      } catch (error) {
+        console.error('Failed to fetch policies:', error);
+      }
+    };
+
+    fetchPolicies();
+  }, []);
+
     if(isAdmin){
     return (
             <MainScreenComponent title= 'Admin Terminal'>
@@ -141,6 +209,44 @@ const toggleFlag = async (reviewId) => {
                         </Col>
                     ))}
                     </Row>
+
+                    <Row>
+          <div className="section-title">
+            <h2>Policies</h2>
+          </div>
+          <Col md={6}>
+            <Form>
+              <Form.Group controlId="toolsDescription">
+                <Form.Label>Tools Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={editToolsDescription}
+                  onChange={(e) => setEditToolsDescription(e.target.value)}
+                />
+                <Button variant="primary" onClick={handleUpdateToolsDescription}>
+                  Update Tools Description
+                </Button>
+              </Form.Group>
+            </Form>
+          </Col>
+          <Col md={6}>
+            <Form>
+              <Form.Group controlId="dmcaTakedownProcedure">
+                <Form.Label>DMCA Takedown Procedure</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={editDmcaTakedownProcedure}
+                  onChange={(e) => setEditDmcaTakedownProcedure(e.target.value)}
+                />
+                <Button variant="primary" onClick={handleUpdateDmcaTakedownProcedure}>
+                  Update DMCA Takedown Procedure
+                </Button>
+              </Form.Group>
+            </Form>
+          </Col>
+        </Row>
                 </Container>
             </MainScreenComponent>
         

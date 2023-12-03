@@ -12,7 +12,7 @@ const userRoutes = require('./routes/userRoutes');
 const listRoutes = require('./routes/listRoutes');
 const reviewRoutes = require('./routes/reviewRoute');
 const flag = require('./routes/flagReviewRoute');
-
+const policyRoutes = require('./routes/policyRoute');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 require('dotenv').config();
@@ -459,6 +459,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/lists', listRoutes);
 app.use('/api/lists/:id/reviews', reviewRoutes);
 app.use('/api/reviews', flag)
+app.use('/api/admin', policyRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

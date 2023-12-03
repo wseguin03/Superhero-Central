@@ -11,6 +11,11 @@ import EditListComponent from './components/EditListComponent';
 import ReviewComponent from './components/ReviewComponent';
 import MyProfileComponent from './components/MyProfileComponent';
 import AdminComponent from './components/AdminComponent';
+import PrivacyPolicy from './components/PolicyComponents/privacyPolicy';
+import DmcaPolicy from './components/PolicyComponents/dmcaPolicy';
+import Policy from './components/PolicyComponents/PolicyComponent';
+import FooterComponent from './components/FooterComponent';
+import MorePolicyComponent from './components/PolicyComponents/MorePolicyComponent';
 function App() {
   return (
     <BrowserRouter>
@@ -26,11 +31,10 @@ function App() {
         <Route path = 'lists/:id/review' element = {<ReviewComponent/>} />
         <Route path = '/my-profile' element = {<MyProfileComponent/>} />
         <Route path = '/admin' element = {<AdminComponent/>} />
-
-
-
-
+        <Route path = 'policy/:name' element = {<Policy/>} />
+        <Route path = 'policy/more' element = {<MorePolicyComponent/>} />
       </Routes>
+      <FooterComponent/>
     </BrowserRouter>
   );
 }
