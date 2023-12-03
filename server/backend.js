@@ -1,6 +1,8 @@
+
+require('dotenv').config();
 const express = require('express');
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 3001;
 const router = express.Router();
 const fs = require('fs');
 const mongoose = require('mongoose');
@@ -16,7 +18,6 @@ const policyRoutes = require('./routes/policyRoute');
 const disputeRoute = require('./routes/disputeRoute');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
-require('dotenv').config();
 
 const username = process.env.api_username;
 const password = process.env.api_password;
@@ -25,7 +26,7 @@ let superhero_info = [];
 let superhero_powers = [];
 
 
-const db_uri = 'mongodb+srv://' + 'superhero_user' + ':' + 'Qk2G1Dt93LiZawv5' + '@superherodata.llwdtto.mongodb.net/superhero?retryWrites=true&w=majority';
+const db_uri = process.env.MONGODB_URI 
 
 mongoose.connect(db_uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
