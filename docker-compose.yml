@@ -1,0 +1,32 @@
+version: '3'
+services:
+  client:
+    build: ./client
+    container_name: react-client-sh
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+    networks:
+      - mern-network
+    depends_on:
+      - server
+    stdin_open: true
+    tty: true
+
+  server:
+    build: ./server
+    container_name: node-server-sh
+
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./server:/server
+      - /server/node_modules
+    networks:
+      - mern-network
+
+networks:
+  mern-network:
+    driver: bridge

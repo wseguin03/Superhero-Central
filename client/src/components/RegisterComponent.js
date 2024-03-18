@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loading from "./Loading";
 import ErrorMessage from "./ErrorMessage";
 import MainScreenComponent from "./MainScreenComponent";
 import "./RegisterComponent.css";
+
 // import { set } from "mongoose";
 import axios from "axios";
 
 function RegisterComponent({ history }) {
+  const navigate = useNavigate(); 
+
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
 
@@ -50,6 +53,7 @@ function RegisterComponent({ history }) {
             localStorage.setItem('userInfo', JSON.stringify(data));
             setLoading(false)
             setError(false)
+            navigate('/login')
         
     }
     catch(error){
